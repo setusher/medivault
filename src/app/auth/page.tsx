@@ -9,9 +9,13 @@ export default function AuthLanding() {
         <div style={styles.leftPanel}>
           <div style={styles.illustration}>
             <div style={styles.illustrationBg}>
-              <div style={styles.heartIcon}></div>
+              <div style={styles.heartIcon}>
+                <div style={styles.heartInner}></div>
+              </div>
               <div style={styles.pulseRing}></div>
-              <div style={styles.stethoscope}></div>
+              <div style={styles.stethoscope}>
+                <div style={styles.stethoscopeInner}></div>
+              </div>
             </div>
           </div>
           <div style={styles.leftContent}>
@@ -25,7 +29,9 @@ export default function AuthLanding() {
         <div style={styles.rightPanel}>
           <div style={styles.authCard}>
             <div style={styles.logoContainer}>
-              <div style={styles.logo}></div>
+              <div style={styles.logo}>
+                <div style={styles.logoInner}></div>
+              </div>
             </div>
             <h1 style={styles.title}>Welcome to MediVault</h1>
             <p style={styles.subtitle}>
@@ -34,24 +40,26 @@ export default function AuthLanding() {
 
             <div style={styles.buttons}>
               <Link href="/auth/signup" style={styles.primaryBtn}>
-                Create New Account
+                <span>Create New Account</span>
+                <div style={styles.buttonGlow}></div>
               </Link>
               <Link href="/auth/login" style={styles.secondaryBtn}>
-                Sign In to Account
+                <span>Sign In to Account</span>
+                <div style={styles.buttonRipple}></div>
               </Link>
             </div>
 
             <div style={styles.features}>
               <div style={styles.feature}>
-                <div style={styles.featureIcon}></div>
+                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}></div>
                 <span>Bank-level Security</span>
               </div>
               <div style={styles.feature}>
-                <div style={styles.featureIcon}></div>
+                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}></div>
                 <span>HIPAA Compliant</span>
               </div>
               <div style={styles.feature}>
-                <div style={styles.featureIcon}></div>
+                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}}></div>
                 <span>Always Accessible</span>
               </div>
             </div>
@@ -65,7 +73,7 @@ export default function AuthLanding() {
 const styles: Record<string, React.CSSProperties> = {
   wrap: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%)',
+    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
     padding: 16,
     display: 'flex',
     alignItems: 'center',
@@ -77,11 +85,12 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: 1200,
     width: '100%',
     minHeight: 600,
-    background: 'white',
+    background: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(20px)',
     borderRadius: 24,
     overflow: 'hidden',
-    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.1)',
-    border: '1px solid rgba(0, 0, 0, 0.06)',
+    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
   },
   leftPanel: {
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -108,6 +117,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     position: 'relative' as const,
     backdropFilter: 'blur(20px)',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
   },
   heartIcon: {
     width: 80,
@@ -115,6 +125,16 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
     position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+  },
+  heartInner: {
+    width: 40,
+    height: 40,
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderRadius: 8,
   },
   pulseRing: {
     position: 'absolute' as const,
@@ -135,6 +155,16 @@ const styles: Record<string, React.CSSProperties> = {
     height: 40,
     background: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backdropFilter: 'blur(10px)',
+  },
+  stethoscopeInner: {
+    width: 20,
+    height: 20,
+    background: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 4,
   },
   leftContent: {
     textAlign: 'center' as const,
@@ -144,14 +174,18 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     margin: '0 0 16px 0',
     color: 'white',
+    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
   },
   leftSubtitle: {
     fontSize: '1.1rem',
     lineHeight: 1.6,
     opacity: 0.9,
     margin: 0,
+    textShadow: '0 1px 10px rgba(0, 0, 0, 0.2)',
   },
   rightPanel: {
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(10px)',
     padding: 48,
     display: 'flex',
     alignItems: 'center',
@@ -172,17 +206,27 @@ const styles: Record<string, React.CSSProperties> = {
     height: 64,
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     borderRadius: 16,
-    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.25)',
+    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoInner: {
+    width: 32,
+    height: 32,
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
   },
   title: {
     fontSize: '2rem',
     fontWeight: 700,
     marginBottom: 12,
-    color: '#1a202c',
+    color: '#ffffff',
+    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
   },
   subtitle: {
     fontSize: '1rem',
-    color: '#64748b',
+    color: '#94a3b8',
     marginBottom: 32,
     lineHeight: 1.6,
   },
@@ -193,6 +237,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 32,
   },
   primaryBtn: {
+    position: 'relative' as const,
     display: 'block',
     padding: '16px 24px',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -201,20 +246,46 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 16,
     textDecoration: 'none',
     fontSize: '1rem',
-    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.25)',
+    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
     transition: 'all 0.3s ease',
+    overflow: 'hidden' as const,
+  },
+  buttonGlow: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease',
+    borderRadius: 16,
   },
   secondaryBtn: {
+    position: 'relative' as const,
     display: 'block',
     padding: '16px 24px',
-    background: 'transparent',
-    border: '1px solid #e2e8f0',
-    color: '#64748b',
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    color: '#94a3b8',
     fontWeight: 600,
     borderRadius: 16,
     textDecoration: 'none',
     fontSize: '1rem',
     transition: 'all 0.3s ease',
+    backdropFilter: 'blur(10px)',
+    overflow: 'hidden' as const,
+  },
+  buttonRipple: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease',
+    borderRadius: 16,
   },
   features: {
     display: 'flex',
@@ -227,12 +298,15 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: 8,
     flex: 1,
+    color: '#94a3b8',
+    fontSize: '0.85rem',
+    fontWeight: 500,
   },
   featureIcon: {
     width: 32,
     height: 32,
-    background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
     borderRadius: 8,
-    border: '1px solid rgba(102, 126, 234, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
   },
 };

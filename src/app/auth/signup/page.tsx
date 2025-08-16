@@ -54,9 +54,15 @@ export default function SignUpPage() {
       <div style={styles.container}>
         <div style={styles.leftPanel}>
           <div style={styles.illustration}>
-            <div style={styles.docIcon}></div>
-            <div style={styles.clipboardIcon}></div>
-            <div style={styles.pillIcon}></div>
+            <div style={styles.docIcon}>
+              <div style={styles.docInner}></div>
+            </div>
+            <div style={styles.clipboardIcon}>
+              <div style={styles.clipboardInner}></div>
+            </div>
+            <div style={styles.pillIcon}>
+              <div style={styles.pillInner}></div>
+            </div>
           </div>
           <h2 style={styles.leftTitle}>Join MediVault</h2>
           <p style={styles.leftSubtitle}>
@@ -71,7 +77,7 @@ export default function SignUpPage() {
               <p style={styles.subtitle}>Get started with your health journey</p>
             </div>
 
-            <form onSubmit={handleSignup} style={styles.form}>
+            <div onSubmit={handleSignup} style={styles.form}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Full Name</label>
                 <input
@@ -110,18 +116,24 @@ export default function SignUpPage() {
 
               {err && <div style={styles.error}>{err}</div>}
 
-              <button type="submit" style={styles.primaryBtn} disabled={busy}>
-                {busy ? 'Creating Account...' : 'Create Account'}
+              <button type="submit" style={styles.primaryBtn} disabled={busy} onClick={handleSignup}>
+                <span>{busy ? 'Creating Account...' : 'Create Account'}</span>
+                <div style={styles.buttonGlow}></div>
               </button>
-            </form>
+            </div>
 
             <div style={styles.divider}>
+              <div style={styles.dividerLine}></div>
               <span style={styles.dividerText}>or continue with</span>
+              <div style={styles.dividerLine}></div>
             </div>
 
             <button onClick={handleGoogle} style={styles.googleBtn} disabled={busy}>
-              <div style={styles.googleIcon}></div>
-              Continue with Google
+              <div style={styles.googleIcon}>
+                <div style={styles.googleIconInner}></div>
+              </div>
+              <span>Continue with Google</span>
+              <div style={styles.buttonRipple}></div>
             </button>
 
             <div style={styles.footer}>
@@ -138,7 +150,7 @@ export default function SignUpPage() {
 const styles: Record<string, React.CSSProperties> = {
   wrap: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #fafafa 0%, #f0f4f8 100%)',
+    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
     padding: 16,
     display: 'flex',
     alignItems: 'center',
@@ -150,11 +162,12 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: 1200,
     width: '100%',
     minHeight: 700,
-    background: 'white',
+    background: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(20px)',
     borderRadius: 24,
     overflow: 'hidden',
-    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.1)',
-    border: '1px solid rgba(0, 0, 0, 0.06)',
+    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
   },
   leftPanel: {
     background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
@@ -181,6 +194,16 @@ const styles: Record<string, React.CSSProperties> = {
     height: 60,
     background: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+  },
+  docInner: {
+    width: 30,
+    height: 30,
+    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    borderRadius: 6,
   },
   clipboardIcon: {
     position: 'absolute' as const,
@@ -190,6 +213,16 @@ const styles: Record<string, React.CSSProperties> = {
     height: 50,
     background: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+  },
+  clipboardInner: {
+    width: 25,
+    height: 25,
+    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    borderRadius: 5,
   },
   pillIcon: {
     position: 'absolute' as const,
@@ -199,20 +232,34 @@ const styles: Record<string, React.CSSProperties> = {
     height: 40,
     background: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+  },
+  pillInner: {
+    width: 20,
+    height: 20,
+    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    borderRadius: 10,
   },
   leftTitle: {
     fontSize: '2rem',
     fontWeight: 700,
     marginBottom: 16,
     textAlign: 'center' as const,
+    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
   },
   leftSubtitle: {
     fontSize: '1.1rem',
     textAlign: 'center' as const,
     lineHeight: 1.6,
     opacity: 0.9,
+    textShadow: '0 1px 10px rgba(0, 0, 0, 0.2)',
   },
   rightPanel: {
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(10px)',
     padding: 48,
     display: 'flex',
     alignItems: 'center',
@@ -230,10 +277,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '1.8rem',
     fontWeight: 700,
     marginBottom: 8,
-    color: '#1a202c',
+    color: '#ffffff',
+    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
   },
   subtitle: {
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: '1rem',
   },
   form: {
@@ -250,19 +298,21 @@ const styles: Record<string, React.CSSProperties> = {
   label: {
     fontSize: '0.9rem',
     fontWeight: 500,
-    color: '#374151',
+    color: '#e2e8f0',
   },
   input: {
     padding: '14px 16px',
     borderRadius: 12,
-    border: '1px solid #e2e8f0',
-    background: '#fafafa',
-    color: '#1a202c',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(10px)',
+    color: '#ffffff',
     fontSize: '1rem',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.3s ease',
     outline: 'none',
   },
   primaryBtn: {
+    position: 'relative' as const,
     padding: '16px 24px',
     background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     color: 'white',
@@ -271,29 +321,47 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     cursor: 'pointer',
     fontSize: '1rem',
-    boxShadow: '0 8px 24px rgba(79, 172, 254, 0.25)',
+    boxShadow: '0 8px 24px rgba(79, 172, 254, 0.4)',
     transition: 'all 0.3s ease',
+    overflow: 'hidden' as const,
+  },
+  buttonGlow: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease',
+    borderRadius: 12,
   },
   divider: {
     position: 'relative' as const,
+    display: 'flex',
+    alignItems: 'center',
     textAlign: 'center' as const,
     margin: '24px 0',
+    gap: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: '1px',
+    background: 'rgba(255, 255, 255, 0.1)',
   },
   dividerText: {
-    background: 'white',
-    padding: '0 16px',
     color: '#94a3b8',
     fontSize: '0.9rem',
-    position: 'relative' as const,
-    zIndex: 1,
+    whiteSpace: 'nowrap' as const,
   },
   googleBtn: {
+    position: 'relative' as const,
     width: '100%',
     padding: '14px 24px',
-    background: 'white',
-    border: '1px solid #e2e8f0',
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     borderRadius: 12,
-    color: '#374151',
+    color: '#e2e8f0',
     fontWeight: 500,
     cursor: 'pointer',
     display: 'flex',
@@ -301,30 +369,55 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     gap: 12,
     fontSize: '1rem',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.3s ease',
     marginBottom: 24,
+    backdropFilter: 'blur(10px)',
+    overflow: 'hidden' as const,
   },
   googleIcon: {
     width: 20,
     height: 20,
-    background: 'linear-gradient(135deg, #ea4335 0%, #34a853 25%, #fbbc05 50%, #4285f4 100%)',
+    background: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleIconInner: {
+    width: 12,
+    height: 12,
+    background: 'linear-gradient(135deg, #ea4335 0%, #34a853 25%, #fbbc05 50%, #4285f4 100%)',
+    borderRadius: 2,
+  },
+  buttonRipple: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+    opacity: 0,
+    transition: 'opacity 0.3s ease',
+    borderRadius: 12,
   },
   footer: {
     textAlign: 'center' as const,
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: '0.9rem',
   },
   link: {
     color: '#4facfe',
     textDecoration: 'none',
     fontWeight: 500,
+    transition: 'color 0.3s ease',
   },
   error: {
-    color: '#ef4444',
+    color: '#ff6b6b',
     fontSize: '0.9rem',
-    background: 'rgba(239, 68, 68, 0.1)',
+    background: 'rgba(255, 107, 107, 0.1)',
+    backdropFilter: 'blur(10px)',
     padding: '12px 16px',
     borderRadius: 8,
-    border: '1px solid rgba(239, 68, 68, 0.2)',
-  }}
+    border: '1px solid rgba(255, 107, 107, 0.2)',
+  },
+};

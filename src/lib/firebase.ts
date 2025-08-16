@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider
 } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage'; // 👈 Added
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY as string,
@@ -21,6 +22,7 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
+let storage: FirebaseStorage; // 👈 Added
 
 export function getFirebaseApp(): FirebaseApp {
   if (!getApps().length) app = initializeApp(firebaseConfig);
@@ -29,7 +31,6 @@ export function getFirebaseApp(): FirebaseApp {
 }
 
 // ✅ Sync, browser-only, single Auth instance.
-//    (No initializeAuth — avoids weird edge cases)
 export async function getFirebaseAuth(): Promise<Auth> {
   if (auth) return auth;
   if (typeof window === 'undefined') {
@@ -47,6 +48,11 @@ export async function getFirebaseAuth(): Promise<Auth> {
 export function getFirestoreDB(): Firestore {
   if (!db) db = getFirestore(getFirebaseApp());
   return db;
+}
+
+export function getFirebaseStorage(): FirebaseStorage { // 👈 Added
+  if (!storage) storage = getStorage(getFirebaseApp());
+  return storage;
 }
 
 export const googleProvider = new GoogleAuthProvider();
