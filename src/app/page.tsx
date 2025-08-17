@@ -293,9 +293,9 @@ export default function Home() {
         />
 
         <FeatureCard
-          title="Prescriptions"
+          title="Decisions"
           subtitle="Manage your medications"
-          href="/prescriptions"
+          href="/decisions"
           colorA={P.p1}
           colorB={P.p5}
           iconSrc={ICONS.prescriptions}
@@ -317,7 +317,7 @@ export default function Home() {
           iconSrc={ICONS.history}
         />
         <FeatureCard
-          title="Medicine Tracker"
+          title="Tracker"
           subtitle="Monitor inventory"
           href="/medicine"
           colorA={P.p8}
