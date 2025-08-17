@@ -1,0 +1,41 @@
+[
+  {
+    "id": "d_w01_001",
+    "ts": "2025-05-01T16:00:00+08:00",
+    "kind": "TestOrder",
+    "summary": "Ordered quarterly fasting lab panel.",
+    "rationale": "Routine quarterly check-up to monitor health metrics.",
+    "links": [
+      {
+        "type": "message",
+        "id": "w01-m03"
+      }
+    ]
+  },
+  {
+    "id": "d_w01_002",
+    "ts": "2025-05-01T19:30:00+08:00",
+    "kind": "PlanUpdate",
+    "summary": "Plan to review lab results and summarize trends upon receipt.",
+    "rationale": "To ensure timely follow-up and action on lab results.",
+    "links": [
+      {
+        "type": "message",
+        "id": "w01-m04"
+      }
+    ]
+  },
+  {
+    "id": "d_w01_003",
+    "ts": "2025-05-06T12:30:00+08:00",
+    "kind": "ExerciseChange",
+    "summary": "Swapped missed lift session for a lighter mobility session due to tight back.",
+    "rationale": "To accommodate physical discomfort and maintain consistency.",
+    "links": [
+      {
+        "type": "message",
+        "id": "w01-m22"
+      }
+    ]
+  }
+]

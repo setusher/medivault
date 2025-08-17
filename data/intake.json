@@ -1,0 +1,114 @@
+{
+    "member": {
+      "id": "rohan",
+      "full_name": "Rohan Patel",
+      "dob": "2005-07-08",
+      "sex": "M",
+      "height_cm": 170,
+      "weight_kg": 68,
+      "blood_group": "O+",
+      "phone": "+91-90000-00000",
+      "email": "rohan.patel@example.com",
+      "time_zone": "Asia/Kolkata",
+      "city": "Ahmedabad, IN"
+    },
+    "emergency_contact": {
+      "name": "Amit Patel",
+      "phone": "+91-90000-11111"
+    },
+    "medical": {
+      "chronic_conditions": [
+        "Prediabetes (impaired fasting glucose)",
+        "Dyslipidemia (high LDL)"
+      ],
+      "current_symptoms": [
+        "Occasional fatigue",
+        "Late-night cravings"
+      ],
+      "medications": [
+        "Vitamin D3 1000 IU daily"
+      ],
+      "allergies": [
+        "Penicillin"
+      ],
+      "past_surgeries": [],
+      "family_history": [
+        "Father: Type 2 Diabetes",
+        "Mother: Hypothyroidism"
+      ],
+      "primary_physician": "Dr. Warren"
+    },
+    "lifestyle": {
+      "diet": "Lacto-vegetarian; low processed sugar; high-fiber focus",
+      "smoking_status": "current",
+      "alcohol_use": "regular",
+      "activity_level": "lightly_active",
+      "work_schedule": "Mon–Fri, 10:00–19:00 IST; mostly desk job",
+      "sleep_hours": 6.5,
+      "stress_level_1to10": 6,
+      "devices": [
+        "Garmin",
+        "Apple Health"
+      ]
+    },
+    "goals": {
+      "primary": "Improve metabolic health and stamina",
+      "specific": [
+        { "metric": "weight_kg", "target": 65, "by_weeks": 12 },
+        { "metric": "hrv_7d_ms", "target": 55, "by_weeks": 16 },
+        { "metric": "rhr_7d_bpm", "target": 56, "by_weeks": 16 },
+        { "metric": "5k_time_min", "target": 28, "by_weeks": 24 }
+      ]
+    },
+    "preferences": {
+      "coach_tone": "friendly",
+      "message_frequency": "3-5_per_week",
+      "language": "en-IN",
+      "content_format": ["text", "links", "short_tips"]
+    },
+    "risks": {
+      "injuries": ["Right knee patellofemoral pain (mild)"],
+      "contraindications": ["Avoid high-impact plyometrics for first 4 weeks"]
+    },
+    "program": {
+      "exercise": "v1.0 - 3x/wk",
+      "nutrition": "Mediterranean",
+      "supplements": ["Omega-3 1 g with dinner (optional)"]
+    },
+    "initial_metrics": {
+      "baseline": {
+        "hrv_7d_ms": 45,
+        "rhr_7d_bpm": 60,
+        "sleep_7d_hours": 7.0,
+        "steps_day": 6000,
+        "weight_kg": 68
+      },
+      "recent_labs": {
+        "a1c_pct": 5.8,
+        "ldl_mg_dl": 142,
+        "hdl_mg_dl": 39,
+        "tg_mg_dl": 180,
+        "vitd_ng_ml": 18
+      },
+      "last_lab_date": "2025-04-15"
+    },
+    "consents": {
+      "store_data": true,
+      "share_with_coaches": true
+   ,
+    "care_team": {
+      "primary_coach": "Ruby",
+      "physician": "DrWarren",
+      "pt": "Carla"
+    },
+    "context": {
+      "start_week": 1,
+      "travel_weeks": [8, 20],
+      "lab_due_weeks": [4, 12, 24, 32],
+      "milestones": {
+        "pt_intro_week": 2,
+        "run_progression_start_week": 5
+      }
+    }
+  }
+}  

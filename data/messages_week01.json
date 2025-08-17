@@ -1,0 +1,241 @@
+[
+  {
+    "id": "w01-m01",
+    "ts": "2025-05-01T09:00:00+08:00",
+    "sender": "Ruby",
+    "text": "Good morning, Rohan! Hope you're starting the week well. How did your weekend go?",
+    "tags": [
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m02",
+    "ts": "2025-05-01T12:30:00+08:00",
+    "sender": "Ruby",
+    "text": "Weekly summary: what went well, where you struggled, and the key metrics we\u2019ll track next week.",
+    "tags": [
+      "report"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m03",
+    "ts": "2025-05-01T16:00:00+08:00",
+    "sender": "DrWarren",
+    "text": "Ordering your quarterly fasting lab panel\u2014book a morning slot; hydrate and avoid food for 8\u201310 hours.",
+    "tags": [
+      "lab_order"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m04",
+    "ts": "2025-05-01T19:30:00+08:00",
+    "sender": "Ruby",
+    "text": "When results land, I\u2019ll summarise trends and what to act on.",
+    "tags": [
+      "labs",
+      "education"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m05",
+    "ts": "2025-05-02T09:30:00+08:00",
+    "sender": "Member",
+    "text": "Wrapped the walk and mobility block\u2014felt good.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m06",
+    "ts": "2025-05-02T12:30:00+08:00",
+    "sender": "Member",
+    "text": "Hit intervals; HR felt steady and recovered fast.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m07",
+    "ts": "2025-05-02T16:00:00+08:00",
+    "sender": "Member",
+    "text": "Protein target met; cooked at home and skipped desserts.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m08",
+    "ts": "2025-05-02T19:30:00+08:00",
+    "sender": "Member",
+    "text": "Missed the lift\u2014late meeting ran over; moving it to tomorrow.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m09",
+    "ts": "2025-05-03T09:30:00+08:00",
+    "sender": "Member",
+    "text": "Slept short last night; planning an early bedtime.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m10",
+    "ts": "2025-05-03T12:30:00+08:00",
+    "sender": "Member",
+    "text": "Missed the lift\u2014late meeting ran over; moving it to tomorrow.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m11",
+    "ts": "2025-05-03T16:00:00+08:00",
+    "sender": "Ruby",
+    "text": "Mid-week nudge\u2014what needs rescheduling?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m12",
+    "ts": "2025-05-03T19:30:00+08:00",
+    "sender": "Member",
+    "text": "Finished today\u2019s workout and logged meals.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m13",
+    "ts": "2025-05-04T09:30:00+08:00",
+    "sender": "Ruby",
+    "text": "How did the morning go\u2014any wins or blockers?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m14",
+    "ts": "2025-05-04T12:30:00+08:00",
+    "sender": "Member",
+    "text": "Had takeout at dinner; went over carbs\u2014will balance at lunch.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m15",
+    "ts": "2025-05-04T16:00:00+08:00",
+    "sender": "Ruby",
+    "text": "Touch base\u2014were steps and protein on track?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m16",
+    "ts": "2025-05-04T19:30:00+08:00",
+    "sender": "Member",
+    "text": "Note \u2014 Finished today\u2019s workout and logged meals.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m17",
+    "ts": "2025-05-05T09:30:00+08:00",
+    "sender": "Ruby",
+    "text": "Note \u2014 How did the morning go\u2014any wins or blockers?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m18",
+    "ts": "2025-05-05T12:30:00+08:00",
+    "sender": "Member",
+    "text": "Only 4k steps today; adding an evening walk.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m19",
+    "ts": "2025-05-05T16:00:00+08:00",
+    "sender": "Ruby",
+    "text": "Pulse check\u2014sleep quality last night?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m20",
+    "ts": "2025-05-05T19:30:00+08:00",
+    "sender": "Member",
+    "text": "Note \u2014 Finished today\u2019s workout and logged meals.",
+    "tags": [
+      "completion",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m21",
+    "ts": "2025-05-06T09:30:00+08:00",
+    "sender": "Ruby",
+    "text": "Note \u2014 Touch base\u2014were steps and protein on track?",
+    "tags": [
+      "coaching",
+      "scheduling"
+    ],
+    "links": []
+  },
+  {
+    "id": "w01-m22",
+    "ts": "2025-05-06T12:30:00+08:00",
+    "sender": "Member",
+    "text": "Skipped mobility; back was tight\u2014will swap for lighter session.",
+    "tags": [
+      "miss",
+      "scheduling"
+    ],
+    "links": []
+  }
+]
