@@ -1,0 +1,563 @@
+{
+  "weekly": {
+    "1": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 3,
+        "hours": 0.05,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    },
+    "2": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 20,
+        "hours": 0.33,
+        "breakdown": []
+      }
+    },
+    "3": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 2,
+        "minutes": 52,
+        "hours": 0.87,
+        "breakdown": [
+          {
+            "start": "2025-05-18T11:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w03-m12",
+            "text": "Glad to hear you're feeling strong! For your knee, try icing it for 15 minutes after exercise. Also, Carla wants to check in with you this week."
+          },
+          {
+            "start": "2025-05-19T13:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w03-m16",
+            "text": "Perfect! Let's schedule a quick call with Carla later this week if that works for you."
+          }
+        ]
+      }
+    },
+    "4": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "5": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 1,
+        "minutes": 37,
+        "hours": 0.62,
+        "breakdown": [
+          {
+            "start": "2025-06-02T09:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w05-m19",
+            "text": "It's a start. With better sleep and hydration, we can aim for 55. Keep tracking and we'll review next week."
+          }
+        ]
+      }
+    },
+    "6": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "7": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "8": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 2,
+        "minutes": 67,
+        "hours": 1.12,
+        "breakdown": [
+          {
+            "start": "2025-06-23T10:30:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w08-m21",
+            "text": "No stress, Rohan. Just ensure you get back on track tomorrow. Want to schedule a quick call to plan?"
+          },
+          {
+            "start": "2025-06-24T18:00:00+08:00",
+            "minutes": 30,
+            "sender": "Ruby",
+            "id": "w08-m23",
+            "text": "Hi Rohan! Just a quick reminder about our call in 30 minutes."
+          }
+        ]
+      }
+    },
+    "9": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 12,
+        "hours": 0.2,
+        "breakdown": []
+      }
+    },
+    "10": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 20,
+        "hours": 0.33,
+        "breakdown": []
+      }
+    },
+    "11": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "12": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    },
+    "13": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 2,
+        "minutes": 44,
+        "hours": 0.73,
+        "breakdown": [
+          {
+            "start": "2025-07-30T11:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w13-m22",
+            "text": "That's the spirit! Keep pushing yourself. How was your lab appointment?"
+          },
+          {
+            "start": "2025-07-30T16:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w13-m24",
+            "text": "That's good to hear! We'll review the results once they're in. Have a great weekend, Rohan!"
+          }
+        ]
+      }
+    },
+    "14": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "15": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 22,
+        "hours": 0.37,
+        "breakdown": []
+      }
+    },
+    "16": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    },
+    "17": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "18": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 12,
+        "hours": 0.2,
+        "breakdown": []
+      }
+    },
+    "19": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "20": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 1,
+        "minutes": 39,
+        "hours": 0.65,
+        "breakdown": [
+          {
+            "start": "2025-09-13T08:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w20-m12",
+            "text": "Excellent choices! Your blood sugar levels should appreciate that. Let's review your HRV trend\u2014it's improved slightly. Keep up the sleep focus."
+          }
+        ]
+      }
+    },
+    "21": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "22": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "23": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 22,
+        "hours": 0.37,
+        "breakdown": []
+      }
+    },
+    "24": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 30,
+        "hours": 0.5,
+        "breakdown": []
+      }
+    },
+    "25": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 3,
+        "hours": 0.05,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    },
+    "26": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "27": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 14,
+        "hours": 0.23,
+        "breakdown": []
+      }
+    },
+    "28": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    },
+    "29": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 2,
+        "minutes": 52,
+        "hours": 0.87,
+        "breakdown": [
+          {
+            "start": "2025-11-15T08:30:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w29-m17",
+            "text": "Awesome! Keep it up. How about we check in on your blood sugar levels this week?"
+          },
+          {
+            "start": "2025-11-16T10:00:00+08:00",
+            "minutes": 15,
+            "sender": "Ruby",
+            "id": "w29-m27",
+            "text": "That's excellent news! Keep it up. Let's check in on your progress next week."
+          }
+        ]
+      }
+    },
+    "30": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 18,
+        "hours": 0.3,
+        "breakdown": []
+      }
+    },
+    "31": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 12,
+        "hours": 0.2,
+        "breakdown": []
+      }
+    },
+    "32": {
+      "doctor": {
+        "consult_sessions": 0,
+        "minutes": 0,
+        "hours": 0.0,
+        "breakdown": []
+      },
+      "coach": {
+        "support_sessions": 0,
+        "minutes": 16,
+        "hours": 0.27,
+        "breakdown": []
+      }
+    }
+  },
+  "totals": {
+    "doctor": {
+      "consult_sessions": 0,
+      "minutes": 6,
+      "hours": 0.1
+    },
+    "coach": {
+      "support_sessions": 10,
+      "minutes": 709,
+      "hours": 11.82
+    }
+  },
+  "assumptions": {
+    "async_minutes_per_coach_msg": 2,
+    "async_minutes_per_doctor_msg": 3,
+    "default_doctor_sync_minutes": 20,
+    "default_coach_sync_minutes": 15,
+    "session_merge_window_minutes": 45,
+    "sync_keywords": [
+      "call",
+      "consult",
+      "consultation",
+      "review",
+      "appointment",
+      "check-in",
+      "check in",
+      "televisit",
+      "video",
+      "zoom",
+      "meet",
+      "pt session",
+      "physio",
+      "physiotherapy"
+    ]
+  }
+}
