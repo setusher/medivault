@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -36,7 +37,7 @@ type Msg = {
 
 function toDateSafe(anyTs: any): Date | undefined {
   if (!anyTs) return undefined;
-  if (anyTs?.toDate) return anyTs.toDate();               // Firestore Timestamp
+  if (anyTs?.toDate) return anyTs.toDate();
   if (typeof anyTs?.seconds === 'number') return new Date(anyTs.seconds * 1000);
   if (typeof anyTs === 'number') return new Date(anyTs);
   if (typeof anyTs === 'string') {
@@ -79,8 +80,8 @@ function coerceName(m: Msg, fallbackIfMember?: string): string {
 
 // Calculate week dates starting from September 17, 2025
 function getWeekDateRange(weekNumber: string): { start: Date; end: Date } {
-  const baseDate = new Date(2025, 8, 17); // September 17, 2025
-  const weekNum = parseInt(weekNumber) - 1; // Week 01 = index 0
+  const baseDate = new Date(2025, 8, 17);
+  const weekNum = parseInt(weekNumber) - 1;
   const start = new Date(baseDate);
   start.setDate(baseDate.getDate() + (weekNum * 7));
   const end = new Date(start);
@@ -107,7 +108,9 @@ function formatDayHeading(d?: Date) {
   yesterday.setDate(today.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return 'Today';
   if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
-  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: d.getFullYear() !== today.getFullYear() ? 'numeric' : undefined });
+  return d.toLocaleDateString(undefined, {
+    day: 'numeric', month: 'long', year: d.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+  });
 }
 
 /** member message (RIGHT) vs team (LEFT) */
@@ -235,7 +238,6 @@ export default function ChatPage() {
       `----------------------------------------`,
     ].join('\n');
 
-    // take last 200 messages to keep context focused
     const recent = messages.slice(-200);
     const lines = recent.map((m) => {
       const ts = coerceDate(m)?.toLocaleString() ?? 'unknown';
@@ -249,7 +251,7 @@ export default function ChatPage() {
     return ctx;
   }, [messages, memberId, week, weekDateText]);
 
-  /* ---- sending (always writes to subcollection) ---- */
+  /* ---- sending ---- */
   const sending = useRef(false);
   const send = async () => {
     if (!text.trim() || sending.current || !memberId || !week) return;
@@ -383,6 +385,7 @@ export default function ChatPage() {
         style={S.fab}
         title="Prompt Lab"
         onClick={() => { setLabSeed(undefined); setLabOpen(true); }}
+        aria-label="Open Prompt Lab"
       >
         🧪
       </button>
@@ -468,8 +471,7 @@ function PromptLab({
         body: JSON.stringify({
           question: q.trim(),
           context,
-          // Optional: you can pass a "system" if your /api/insights supports it
-          system: `You are Prompt Lab, a brief clinical coach. Answer in 4-8 concise bullet points where helpful.`
+          system: `You are Prompt Lab, a brief clinical coach. Answer concisely, use bullets where helpful.`
         }),
       });
       const j = await r.json();
@@ -486,10 +488,10 @@ function PromptLab({
     <div style={PL.overlay} onClick={onClose}>
       <div style={PL.sheet} onClick={(e) => e.stopPropagation()}>
         <div style={PL.header}>
-          <div style={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={PL.titleRow}>
             <span>🧪</span> <span>Prompt Lab</span>
           </div>
-          <button onClick={onClose} style={PL.x}>✕</button>
+          <button onClick={onClose} style={PL.x} aria-label="Close Prompt Lab">✕</button>
         </div>
 
         <div style={PL.quick}>
@@ -555,7 +557,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '12px 16px',
-    background: C.primary,
+    background: C.header,
     color: 'white',
     boxShadow: `0 1px 2px ${C.shadow}`,
     minHeight: '64px',
@@ -607,7 +609,7 @@ const S: Record<string, React.CSSProperties> = {
   // FAB for Prompt Lab
   fab: {
     position: 'fixed', right: 16, bottom: 16, width: 54, height: 54,
-    borderRadius: '50%', border: 'none', background: '#111B21', color: '#fff',
+    borderRadius: '50%', border: 'none', background: '#111B21', color: '#ffffff',
     boxShadow: '0 10px 24px rgba(0,0,0,0.25)', fontSize: 22, cursor: 'pointer', zIndex: 50,
   },
 };
@@ -642,19 +644,44 @@ const D: Record<string, React.CSSProperties> = {
   }
 };
 
+/* --------- Prompt Lab styles (high contrast) --------- */
+const DARK_TEXT = '#0b141a';         // WhatsApp-like dark text
+const MID_TEXT  = '#1f2937';         // headings / emphasis
+const BORDER    = '#c5ccd3';         // stronger border
+const PANEL_BG  = '#ffffff';
+
 const PL: Record<string, React.CSSProperties> = {
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'end center', zIndex: 1000 },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'grid', placeItems: 'end center', zIndex: 1000 },
   sheet: {
-    width: 'min(780px, 94vw)', background: '#fff', border: '1px solid rgba(0,0,0,0.08)',
-    borderRadius: 14, margin: 12, padding: 12, boxShadow: '0 10px 28px rgba(0,0,0,0.15)',
+    width: 'min(780px, 94vw)', background: PANEL_BG, border: `1px solid ${BORDER}`,
+    borderRadius: 14, margin: 12, padding: 12, boxShadow: '0 10px 28px rgba(0,0,0,0.18)', color: DARK_TEXT
   },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  x: { border: '1px solid rgba(0,0,0,0.12)', background: '#fff', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' },
+  titleRow: { fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8, color: MID_TEXT, fontSize: 16 },
+  x: {
+    border: `1px solid ${BORDER}`, background: PANEL_BG, color: DARK_TEXT,
+    borderRadius: 8, padding: '4px 10px', cursor: 'pointer'
+  },
   quick: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 },
-  quickBtn: { padding: '6px 10px', borderRadius: 999, border: '1px solid rgba(0,0,0,0.12)', background: '#f5f7ff', cursor: 'pointer' },
-  ta: { width: '100%', minHeight: 80, borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', padding: 10, margin: '8px 0' },
-  ask: { padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', background: '#00A884', color: '#fff', fontWeight: 800, cursor: 'pointer' },
-  secondary: { padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', background: '#fff', cursor: 'pointer' },
-  answer: { marginTop: 12, padding: 12, borderRadius: 10, border: '1px solid rgba(0,0,0,0.1)', background: '#fafafa', lineHeight: 1.55 },
+  quickBtn: {
+    padding: '6px 10px', borderRadius: 999, border: `1px solid ${BORDER}`,
+    background: '#eef2f6', cursor: 'pointer', color: DARK_TEXT, fontWeight: 600
+  },
+  ta: {
+    width: '100%', minHeight: 80, borderRadius: 10, border: `1px solid ${BORDER}`,
+    padding: 10, margin: '8px 0', color: DARK_TEXT, background: '#fcfcfc'
+  },
+  ask: {
+    padding: '10px 14px', borderRadius: 10, border: `1px solid ${BORDER}`,
+    background: '#00A884', color: '#fff', fontWeight: 800, cursor: 'pointer'
+  },
+  secondary: {
+    padding: '10px 14px', borderRadius: 10, border: `1px solid ${BORDER}`,
+    background: PANEL_BG, cursor: 'pointer', color: DARK_TEXT, fontWeight: 600
+  },
+  answer: {
+    marginTop: 12, padding: 12, borderRadius: 10, border: `1px solid ${BORDER}`,
+    background: '#fff', lineHeight: 1.55, color: DARK_TEXT
+  },
   err: { marginTop: 8, color: '#b00020', fontSize: 13 },
 };

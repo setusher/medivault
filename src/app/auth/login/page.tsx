@@ -9,7 +9,26 @@ import {
 } from 'firebase/auth';
 import { getFirebaseAuth, googleProvider } from '@/lib/firebase';
 
-
+/* Shared palette & helpers */
+const P = {
+  p1: '#fadde1', p2: '#ffc4d6', p3: '#ffa6c1', p4: '#ff87ab', p5: '#ff5d8f',
+  p6: '#ff97b7', p7: '#ffacc5', p8: '#ffcad4', p9: '#f4acb7',
+};
+const alpha = (hex: string, a = 0.5) => {
+  const c = Number.parseInt(hex.replace('#', ''), 16);
+  const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+  return `rgba(${r},${g},${b},${a})`;
+};
+const softGlow = (color: string, s = 0.5) =>
+  `0 10px 28px ${alpha(color, s)}, 0 0 64px ${alpha(color, s * 0.6)}`;
+const glassBorder = (o = 0.14): React.CSSProperties => ({
+  border: `1px solid ${alpha('#ffffff', o)}`, backdropFilter: 'blur(18px)',
+});
+const glowPill = (a: string, b: string): React.CSSProperties => ({
+  padding: '12px 18px', borderRadius: 14, fontWeight: 800, letterSpacing: .3,
+  color: '#3c1d2a', textDecoration: 'none',
+  background: `linear-gradient(135deg, ${a}, ${b})`, boxShadow: softGlow(b, .45),
+});
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,12 +68,8 @@ export default function LoginPage() {
   }
 
   async function handleForgotPassword() {
-    if (!email) {
-      setErr('Enter your email first.');
-      return;
-    }
-    setErr(null);
-    setInfo(null);
+    if (!email) { setErr('Enter your email first.'); return; }
+    setErr(null); setInfo(null);
     try {
       const auth = await getFirebaseAuth();
       await sendPasswordResetEmail(auth, email.trim());
@@ -66,390 +81,101 @@ export default function LoginPage() {
 
   return (
     <main style={styles.wrap}>
-      <div style={styles.container}>
-        <div style={styles.leftPanel}>
-          <div style={styles.illustration}>
-            <div style={styles.shieldIcon}>
-              <div style={styles.shieldInner}></div>
-            </div>
-            <div style={styles.lockIcon}>
-              <div style={styles.lockInner}></div>
-            </div>
-            <div style={styles.keyIcon}>
-              <div style={styles.keyInner}></div>
-            </div>
+      <div aria-hidden style={styles.bg} />
+      <div style={{ ...styles.card, ...glassBorder(0.16) }} data-raise>
+        <div style={styles.header}>
+          <div style={{ ...styles.logo, background: `linear-gradient(135deg, ${P.p3}, ${P.p5})`, boxShadow: softGlow(P.p5, .35) }}>
+            <div style={styles.logoInner} />
           </div>
-          <h2 style={styles.leftTitle}>Welcome Back</h2>
-          <p style={styles.leftSubtitle}>
-            Securely access your medical information and continue managing your health journey.
-          </p>
+          <div>
+            <h1 style={styles.title}>Sign In</h1>
+            <p style={styles.subtitle}>Access your MediVault account</p>
+          </div>
         </div>
 
-        <div style={styles.rightPanel}>
-          <div style={styles.formCard}>
-            <div style={styles.header}>
-              <h1 style={styles.title}>Sign In</h1>
-              <p style={styles.subtitle}>Access your MediVault account</p>
-            </div>
+        <form onSubmit={handleLogin} style={styles.form}>
+          <Label>Email</Label>
+          <input style={styles.input} type="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)} required />
 
-            <div style={styles.form}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Email Address</label>
-                <input
-                  style={styles.input}
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+          <Label>Password</Label>
+          <input style={styles.input} type="password" placeholder="Your password" value={password} onChange={e=>setPassword(e.target.value)} required />
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Password</label>
-                <input
-                  style={styles.input}
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+          {err && <div style={styles.error}>{err}</div>}
+          {info && <div style={styles.info}>{info}</div>}
 
-              {err && <div style={styles.error}>{err}</div>}
-              {info && <div style={styles.info}>{info}</div>}
+          <button type="submit" disabled={busy} style={{ ...glowPill(P.p2, P.p5), width: '100%', justifyContent: 'center', display: 'inline-flex' }}>
+            {busy ? 'Signing In…' : 'Sign In'}
+          </button>
+        </form>
 
-              <button onClick={handleLogin} style={styles.primaryBtn} disabled={busy}>
-                <span>{busy ? 'Signing In...' : 'Sign In'}</span>
-                <div style={styles.buttonGlow}></div>
-              </button>
-            </div>
+        <div style={styles.actionsRow}>
+          <button onClick={handleForgotPassword} style={styles.linkBtn}>Forgot your password?</button>
+        </div>
 
-            <div style={styles.divider}>
-              <div style={styles.dividerLine}></div>
-              <span style={styles.dividerText}>or continue with</span>
-              <div style={styles.dividerLine}></div>
-            </div>
+        <div style={styles.divider}><div style={styles.line}/><span style={styles.divText}>or</span><div style={styles.line}/></div>
 
-            <button onClick={handleGoogle} style={styles.googleBtn} disabled={busy}>
-              <div style={styles.googleIcon}>
-                <div style={styles.googleIconInner}></div>
-              </div>
-              <span>Continue with Google</span>
-              <div style={styles.buttonRipple}></div>
-            </button>
+        <button onClick={handleGoogle} disabled={busy} style={{ ...styles.ghostBtn, ...glassBorder(0.12) }} data-raise>
+          <div style={styles.gIcon}><div style={styles.gInner}/></div>
+          Continue with Google
+          <div style={styles.buttonRipple}></div>
+        </button>
 
-            <div style={styles.forgotPassword}>
-              <button onClick={handleForgotPassword} style={styles.linkBtn}>
-                Forgot your password?
-              </button>
-            </div>
-
-            <div style={styles.footer}>
-              <span>Don't have an account? </span>
-              <a href="/auth/signup" style={styles.link}>Create one here</a>
-            </div>
-          </div>
+        <div style={styles.footer}>
+          <span>Don’t have an account? </span>
+          <a href="/auth/signup" style={styles.link}>Create one</a>
         </div>
       </div>
     </main>
   );
 }
 
+function Label({ children }: { children: React.ReactNode }) {
+  return <label style={styles.label}>{children}</label>;
+}
+
 const styles: Record<string, React.CSSProperties> = {
-  wrap: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
-    padding: 16,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  wrap: { minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 20, position: 'relative', color: '#3c1d2a' },
+  bg: {
+    position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
+    background: `
+      radial-gradient(1100px 700px at 15% -10%, ${alpha('#fff', .28)} 0%, transparent 60%),
+      radial-gradient(900px 700px at 110% 10%, ${alpha(P.p2, .45)} 0%, transparent 65%),
+      radial-gradient(900px 700px at -10% 80%, ${alpha(P.p4, .40)} 0%, transparent 60%),
+      linear-gradient(135deg, ${P.p8}, ${P.p9} 35%, ${P.p7})
+    `,
   },
-  container: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    maxWidth: 1200,
-    width: '100%',
-    minHeight: 600,
-    background: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 24,
-    overflow: 'hidden',
-    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+  card: {
+    position: 'relative', zIndex: 1, width: 'min(640px, 94vw)',
+    borderRadius: 22, padding: 28,
+    background: `linear-gradient(145deg, ${alpha('#ffffff', .75)}, ${alpha('#ffffff', .6)})`,
+    boxShadow: softGlow(P.p5, .25),
   },
-  leftPanel: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: 48,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'white',
-    position: 'relative' as const,
-  },
-  illustration: {
-    position: 'relative' as const,
-    width: 160,
-    height: 160,
-    marginBottom: 32,
-  },
-  shieldIcon: {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 80,
-    height: 80,
-    background: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 16,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-  },
-  shieldInner: {
-    width: 40,
-    height: 40,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: 8,
-  },
-  lockIcon: {
-    position: 'absolute' as const,
-    top: 10,
-    right: 10,
-    width: 40,
-    height: 40,
-    background: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-  },
-  lockInner: {
-    width: 20,
-    height: 20,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: 4,
-  },
-  keyIcon: {
-    position: 'absolute' as const,
-    bottom: 10,
-    left: 10,
-    width: 36,
-    height: 36,
-    background: 'rgba(255, 255, 255, 0.6)',
-    borderRadius: 18,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-  },
-  keyInner: {
-    width: 18,
-    height: 18,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: 9,
-  },
-  leftTitle: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    marginBottom: 16,
-    textAlign: 'center' as const,
-    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
-  },
-  leftSubtitle: {
-    fontSize: '1.1rem',
-    textAlign: 'center' as const,
-    lineHeight: 1.6,
-    opacity: 0.9,
-    textShadow: '0 1px 10px rgba(0, 0, 0, 0.2)',
-  },
-  rightPanel: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    backdropFilter: 'blur(10px)',
-    padding: 48,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  formCard: {
-    width: '100%',
-    maxWidth: 400,
-  },
-  header: {
-    textAlign: 'center' as const,
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: '1.8rem',
-    fontWeight: 700,
-    marginBottom: 8,
-    color: '#ffffff',
-    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
-  },
-  subtitle: {
-    color: '#94a3b8',
-    fontSize: '1rem',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 20,
-    marginBottom: 24,
-  },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 8,
-  },
-  label: {
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    color: '#e2e8f0',
-  },
+  header: { display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14 },
+  logo: { width: 54, height: 54, borderRadius: 12, display: 'grid', placeItems: 'center' },
+  logoInner: { width: 22, height: 22, background: alpha('#fff', .55), borderRadius: 6 },
+  title: { margin: 0, fontSize: '1.6rem', fontWeight: 900 },
+  subtitle: { margin: 0, opacity: .8 },
+  form: { display: 'grid', gap: 10, marginTop: 10 },
+  label: { fontSize: 12, fontWeight: 700, opacity: .75 },
   input: {
-    padding: '14px 16px',
-    borderRadius: 12,
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    background: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(10px)',
-    color: '#ffffff',
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-    outline: 'none',
+    padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)',
+    background: alpha('#ffffff', .7), outline: 'none', fontSize: '1rem',
   },
-  primaryBtn: {
-    position: 'relative' as const,
-    padding: '16px 24px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    fontWeight: 600,
-    borderRadius: 12,
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
-    transition: 'all 0.3s ease',
-    overflow: 'hidden' as const,
+  actionsRow: { marginTop: 8, display: 'flex', justifyContent: 'flex-end' },
+  linkBtn: { background: 'none', border: 'none', color: P.p5, cursor: 'pointer', fontWeight: 800 },
+  divider: { display: 'flex', alignItems: 'center', gap: 10, margin: '14px 0' },
+  line: { flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' },
+  divText: { fontSize: 12, opacity: .7 },
+  ghostBtn: {
+    position: 'relative', width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+    padding: '12px 18px', borderRadius: 14, fontWeight: 800, color: '#3c1d2a',
+    background: alpha('#ffffff', .6), border: '1px solid rgba(0,0,0,0.06)',
   },
-  buttonGlow: {
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent)',
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    borderRadius: 12,
-  },
-  divider: {
-    position: 'relative' as const,
-    display: 'flex',
-    alignItems: 'center',
-    textAlign: 'center' as const,
-    margin: '24px 0',
-    gap: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: '1px',
-    background: 'rgba(255, 255, 255, 0.1)',
-  },
-  dividerText: {
-    color: '#94a3b8',
-    fontSize: '0.9rem',
-    whiteSpace: 'nowrap' as const,
-  },
-  googleBtn: {
-    position: 'relative' as const,
-    width: '100%',
-    padding: '14px 24px',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    color: '#e2e8f0',
-    fontWeight: 500,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-    marginBottom: 16,
-    backdropFilter: 'blur(10px)',
-    overflow: 'hidden' as const,
-  },
-  googleIcon: {
-    width: 20,
-    height: 20,
-    background: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 4,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleIconInner: {
-    width: 12,
-    height: 12,
-    background: 'linear-gradient(135deg, #ea4335 0%, #34a853 25%, #fbbc05 50%, #4285f4 100%)',
-    borderRadius: 2,
-  },
-  buttonRipple: {
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    borderRadius: 12,
-  },
-  forgotPassword: {
-    textAlign: 'center' as const,
-    marginBottom: 24,
-  },
-  linkBtn: {
-    background: 'none',
-    border: 'none',
-    color: '#667eea',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    textDecoration: 'underline',
-    transition: 'color 0.3s ease',
-  },
-  footer: {
-    textAlign: 'center' as const,
-    color: '#94a3b8',
-    fontSize: '0.9rem',
-  },
-  link: {
-    color: '#667eea',
-    textDecoration: 'none',
-    fontWeight: 500,
-    transition: 'color 0.3s ease',
-  },
-  error: {
-    color: '#ff6b6b',
-    fontSize: '0.9rem',
-    background: 'rgba(255, 107, 107, 0.1)',
-    backdropFilter: 'blur(10px)',
-    padding: '12px 16px',
-    borderRadius: 8,
-    border: '1px solid rgba(255, 107, 107, 0.2)',
-  },
-  info: {
-    color: '#4facfe',
-    fontSize: '0.9rem',
-    background: 'rgba(79, 172, 254, 0.1)',
-    backdropFilter: 'blur(10px)',
-    padding: '12px 16px',
-    borderRadius: 8,
-    border: '1px solid rgba(79, 172, 254, 0.2)',
-  },
+  gIcon: { width: 18, height: 18, borderRadius: 4, background: alpha('#000', .06), display: 'grid', placeItems: 'center' },
+  gInner: { width: 12, height: 12, borderRadius: 2, background: 'linear-gradient(135deg,#ea4335 0%,#34a853 33%,#fbbc05 66%,#4285f4 100%)' },
+  footer: { textAlign: 'center', marginTop: 10, fontSize: 14, opacity: .85 },
+  link: { color: P.p5, fontWeight: 800, textDecoration: 'none' },
+  error: { color: '#a00', background: alpha('#a00', .08), border: '1px solid rgba(0,0,0,0.06)', padding: '10px 12px', borderRadius: 10, fontSize: 14, marginTop: 6 },
+  info: { color: '#0a6', background: alpha('#0a6', .08), border: '1px solid rgba(0,0,0,0.06)', padding: '10px 12px', borderRadius: 10, fontSize: 14, marginTop: 6 },
+  buttonRipple: { position: 'absolute', inset: 0, borderRadius: 14, background: `radial-gradient(120px 60px at var(--x,50%) var(--y,50%), ${alpha('#fff', .35)}, transparent 70%)`, opacity: 0, transition: 'opacity 200ms ease' },
 };

@@ -2,311 +2,121 @@
 
 import Link from 'next/link';
 
+/* Shared palette & helpers (same vibe as dashboard) */
+const P = {
+  p1: '#fadde1', p2: '#ffc4d6', p3: '#ffa6c1', p4: '#ff87ab', p5: '#ff5d8f',
+  p6: '#ff97b7', p7: '#ffacc5', p8: '#ffcad4', p9: '#f4acb7',
+};
+const alpha = (hex: string, a = 0.5) => {
+  const c = Number.parseInt(hex.replace('#', ''), 16);
+  const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+  return `rgba(${r},${g},${b},${a})`;
+};
+const softGlow = (color: string, s = 0.5) =>
+  `0 10px 28px ${alpha(color, s)}, 0 0 64px ${alpha(color, s * 0.6)}`;
+const glassBorder = (o = 0.14): React.CSSProperties => ({
+  border: `1px solid ${alpha('#ffffff', o)}`, backdropFilter: 'blur(18px)',
+});
+const glowPill = (a: string, b: string): React.CSSProperties => ({
+  padding: '12px 18px', borderRadius: 14, fontWeight: 800, letterSpacing: .3,
+  color: '#3c1d2a', textDecoration: 'none',
+  background: `linear-gradient(135deg, ${a}, ${b})`, boxShadow: softGlow(b, .45),
+});
+
 export default function AuthLanding() {
   return (
     <main style={styles.wrap}>
-      <div style={styles.container}>
-        <div style={styles.leftPanel}>
-          <div style={styles.illustration}>
-            <div style={styles.illustrationBg}>
-              <div style={styles.heartIcon}>
-                <div style={styles.heartInner}></div>
-              </div>
-              <div style={styles.pulseRing}></div>
-              <div style={styles.stethoscope}>
-                <div style={styles.stethoscopeInner}></div>
-              </div>
-            </div>
-          </div>
-          <div style={styles.leftContent}>
-            <h2 style={styles.leftTitle}>Secure Health Management</h2>
-            <p style={styles.leftSubtitle}>
-              Keep your medical information safe, organized, and accessible whenever you need it.
-            </p>
+      {/* background plumes */}
+      <div aria-hidden style={styles.bg} />
+      <div style={{ ...styles.card, ...glassBorder(0.16) }} data-raise>
+        <div style={styles.logoWrap}>
+          <div style={{ ...styles.logo, background: `linear-gradient(135deg, ${P.p3}, ${P.p5})`, boxShadow: softGlow(P.p5, .4) }}>
+            <div style={styles.logoInner} />
           </div>
         </div>
+        <h1 style={styles.title}>Welcome to MediVault</h1>
+        <p style={styles.subtitle}>Your friendly, secure home for medical data.</p>
 
-        <div style={styles.rightPanel}>
-          <div style={styles.authCard}>
-            <div style={styles.logoContainer}>
-              <div style={styles.logo}>
-                <div style={styles.logoInner}></div>
-              </div>
-            </div>
-            <h1 style={styles.title}>Welcome to MediVault</h1>
-            <p style={styles.subtitle}>
-              Your trusted digital health companion for secure medical data management.
-            </p>
-
-            <div style={styles.buttons}>
-              <Link href="/auth/signup" style={styles.primaryBtn}>
-                <span>Create New Account</span>
-                <div style={styles.buttonGlow}></div>
-              </Link>
-              <Link href="/auth/login" style={styles.secondaryBtn}>
-                <span>Sign In to Account</span>
-                <div style={styles.buttonRipple}></div>
-              </Link>
-            </div>
-
-            <div style={styles.features}>
-              <div style={styles.feature}>
-                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}></div>
-                <span>Bank-level Security</span>
-              </div>
-              <div style={styles.feature}>
-                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}></div>
-                <span>HIPAA Compliant</span>
-              </div>
-              <div style={styles.feature}>
-                <div style={{...styles.featureIcon, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}}></div>
-                <span>Always Accessible</span>
-              </div>
-            </div>
-          </div>
+        <div style={styles.btnRow}>
+          <Link href="/auth/signup" style={{ ...glowPill(P.p2, P.p5) }} data-raise>
+            Create New Account
+          </Link>
+          <Link href="/auth/login" style={{ ...styles.secondaryBtn, ...glassBorder(0.12) }} data-raise>
+            <span>Sign In</span>
+            <div style={styles.buttonRipple}></div>
+          </Link>
         </div>
+
+        {/* <div style={styles.features}>
+          <Feature text="Bank-level security" />
+          <Feature text="HIPAA-ready workflows" />
+          <Feature text="Access anywhere" />
+        </div> */}
       </div>
     </main>
   );
 }
 
+function Feature({ text }: { text: string }) {
+  return (
+    <div style={styles.feature}>
+      <div style={styles.featureDot} />
+      <span>{text}</span>
+    </div>
+  );
+}
+
 const styles: Record<string, React.CSSProperties> = {
-  wrap: {
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
-    padding: 16,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  wrap: { minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 20, position: 'relative', color: '#3c1d2a' },
+  bg: {
+    position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
+    background: `
+      radial-gradient(1100px 700px at 15% -10%, ${alpha('#fff', .28)} 0%, transparent 60%),
+      radial-gradient(900px 700px at 110% 10%, ${alpha(P.p2, .45)} 0%, transparent 65%),
+      radial-gradient(900px 700px at -10% 80%, ${alpha(P.p4, .40)} 0%, transparent 60%),
+      linear-gradient(135deg, ${P.p8}, ${P.p9} 35%, ${P.p7})
+    `,
   },
-  container: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    maxWidth: 1200,
-    width: '100%',
-    minHeight: 600,
-    background: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 24,
-    overflow: 'hidden',
-    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+  card: {
+    position: 'relative', zIndex: 1, width: 'min(640px, 94vw)',
+    borderRadius: 22, padding: 32,
+    background: `linear-gradient(145deg, ${alpha('#ffffff', .75)}, ${alpha('#ffffff', .6)})`,
+    boxShadow: softGlow(P.p5, .25), textAlign: 'center',
   },
-  leftPanel: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    padding: 48,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: 'white',
-    position: 'relative' as const,
-    overflow: 'hidden' as const,
-  },
-  illustration: {
-    marginBottom: 32,
-    position: 'relative' as const,
-  },
-  illustrationBg: {
-    width: 200,
-    height: 200,
-    borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.1)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative' as const,
-    backdropFilter: 'blur(20px)',
-    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-  },
-  heartIcon: {
-    width: 80,
-    height: 80,
-    background: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 12,
-    position: 'relative' as const,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-  },
-  heartInner: {
-    width: 40,
-    height: 40,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: 8,
-  },
-  pulseRing: {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 120,
-    height: 120,
-    border: '2px solid rgba(255, 255, 255, 0.3)',
-    borderRadius: '50%',
-    animation: 'pulse 2s infinite',
-  },
-  stethoscope: {
-    position: 'absolute' as const,
-    bottom: 20,
-    right: 20,
-    width: 40,
-    height: 40,
-    background: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backdropFilter: 'blur(10px)',
-  },
-  stethoscopeInner: {
-    width: 20,
-    height: 20,
-    background: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 4,
-  },
-  leftContent: {
-    textAlign: 'center' as const,
-  },
-  leftTitle: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    margin: '0 0 16px 0',
-    color: 'white',
-    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
-  },
-  leftSubtitle: {
-    fontSize: '1.1rem',
-    lineHeight: 1.6,
-    opacity: 0.9,
-    margin: 0,
-    textShadow: '0 1px 10px rgba(0, 0, 0, 0.2)',
-  },
-  rightPanel: {
-    background: 'rgba(255, 255, 255, 0.02)',
-    backdropFilter: 'blur(10px)',
-    padding: 48,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  authCard: {
-    width: '100%',
-    maxWidth: 400,
-    textAlign: 'center' as const,
-  },
-  logoContainer: {
-    marginBottom: 32,
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 64,
-    height: 64,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    borderRadius: 16,
-    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoInner: {
-    width: 32,
-    height: 32,
-    background: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-  },
-  title: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    marginBottom: 12,
-    color: '#ffffff',
-    textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
-  },
-  subtitle: {
-    fontSize: '1rem',
-    color: '#94a3b8',
-    marginBottom: 32,
-    lineHeight: 1.6,
-  },
-  buttons: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 12,
-    marginBottom: 32,
-  },
-  primaryBtn: {
-    position: 'relative' as const,
-    display: 'block',
-    padding: '16px 24px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: 'white',
-    fontWeight: 600,
-    borderRadius: 16,
-    textDecoration: 'none',
-    fontSize: '1rem',
-    boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
-    transition: 'all 0.3s ease',
-    overflow: 'hidden' as const,
-  },
-  buttonGlow: {
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent)',
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    borderRadius: 16,
-  },
+  logoWrap: { display: 'flex', justifyContent: 'center', marginBottom: 16 },
+  logo: { width: 72, height: 72, borderRadius: 16, display: 'grid', placeItems: 'center' },
+  logoInner: { width: 32, height: 32, background: alpha('#fff', .5), borderRadius: 8 },
+  title: { margin: '8px 0 6px', fontSize: '2.1rem', fontWeight: 900 },
+  subtitle: { margin: 0, opacity: .8 },
+  btnRow: { display: 'flex', gap: 10, justifyContent: 'center', margin: '20px 0 6px', flexWrap: 'wrap' as const },
   secondaryBtn: {
-    position: 'relative' as const,
-    display: 'block',
-    padding: '16px 24px',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#94a3b8',
-    fontWeight: 600,
-    borderRadius: 16,
-    textDecoration: 'none',
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-    backdropFilter: 'blur(10px)',
-    overflow: 'hidden' as const,
+    position: 'relative', padding: '12px 18px', borderRadius: 14, fontWeight: 800,
+    background: alpha('#ffffff', .6), color: '#3c1d2a', textDecoration: 'none',
+    border: '1px solid rgba(0,0,0,0.06)',
   },
   buttonRipple: {
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    borderRadius: 16,
+    position: 'absolute', inset: 0, borderRadius: 14,
+    background: `radial-gradient(120px 60px at var(--x, 50%) var(--y, 50%), ${alpha('#fff', .35)}, transparent 70%)`,
+    opacity: 0, transition: 'opacity 200ms ease', pointerEvents: 'none',
   },
-  features: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: 16,
+  features: { display: 'flex', gap: 14, justifyContent: 'center', marginTop: 18, flexWrap: 'wrap' as const },
+  feature: { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+    borderRadius: 999, border: '1px solid rgba(0,0,0,0.06)', background: alpha('#fff', .6), fontWeight: 700, fontSize: 12,
   },
-  feature: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-    color: '#94a3b8',
-    fontSize: '0.85rem',
-    fontWeight: 500,
-  },
-  featureIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-  },
+  featureDot: { width: 8, height: 8, borderRadius: 999, background: alpha(P.p5, .9) },
 };
+
+/* tiny hover lift */
+if (typeof window !== 'undefined') {
+  const onMove = (e: MouseEvent) => {
+    const t = e.currentTarget as HTMLElement; const r = t.getBoundingClientRect();
+    t.style.setProperty('--x', `${e.clientX - r.left}px`); t.style.setProperty('--y', `${e.clientY - r.top}px`);
+  };
+  const enter = (el: HTMLElement) => { el.style.transform = 'translateY(-3px) scale(1.01)'; el.style.filter = 'brightness(1.02)'; const ripple = el.querySelector<HTMLElement>('div[style*="radial-gradient"]'); if (ripple) ripple.style.opacity = '1'; };
+  const leave = (el: HTMLElement) => { el.style.transform = 'none'; el.style.filter = 'none'; const ripple = el.querySelector<HTMLElement>('div[style*="radial-gradient"]'); if (ripple) ripple.style.opacity = '0'; };
+  setTimeout(() => document.querySelectorAll<HTMLElement>('[data-raise]').forEach(el => {
+    el.addEventListener('pointerenter', () => enter(el));
+    el.addEventListener('pointerleave', () => leave(el));
+    el.addEventListener('pointermove', onMove as any);
+  }), 0);
+}
