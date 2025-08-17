@@ -1,12 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import {
-  ref, uploadBytes, getDownloadURL
-} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { getFirebaseAuth, getFirestoreDB, getFirebaseStorage } from '@/lib/firebase';
 
@@ -22,6 +20,8 @@ type ConditionItem = {
   key: string; label: string; selected: boolean; year?: string;
 };
 
+type UploadedFile = { name: string; url: string; path: string };
+
 type Form = {
   // A. Profile & Consent
   fullName: string;
@@ -35,7 +35,7 @@ type Form = {
   emergencyContactPhone: string;
   consentStore: boolean;
   consentShare: boolean;
-  idUploads: UploadedFile[]; // storage URLs
+  idUploads: UploadedFile[];
 
   // B. Communication & Preferences
   primaryChannel: 'WhatsApp' | 'Email' | 'SMS' | 'In-app' | '';
@@ -43,12 +43,12 @@ type Form = {
   assistantName: string;
   assistantContact: string;
   updateStyle: 'Executive summary first' | 'Detailed first' | '';
-  callWindows: string[]; // simple strings for now
+  callWindows: string[];
   language: string;
 
   // C. Goals
   topGoals: string[];
-  timelines: string; // free text or dates summary
+  timelines: string;
   successDefinition: string;
 
   // D. Lifestyle
@@ -58,14 +58,14 @@ type Form = {
   activity: 'Sedentary' | 'Light' | 'Moderate' | 'High' | '';
   exerciseDays: string;
   diet: 'Mixed' | 'Vegetarian' | 'Vegan' | 'Mediterranean' | 'Low-carb' | 'Other' | '';
-  dietChips: string[]; // tags
+  dietChips: string[];
   alcohol: 'None' | 'Occasional' | 'Weekly' | 'Daily' | '';
   tobacco: 'Never' | 'Former' | 'Current' | '';
   caffeineCups: string;
 
   // E. Travel
   travelFreq: '~1 week per month' | '2–3 days monthly' | 'Rare' | '';
-  travelZones: string[]; // chips
+  travelZones: string[];
   nextTripStart: string;
   nextTripEnd: string;
   jetLagHard: YesNo;
@@ -107,11 +107,8 @@ type Form = {
   // L. Recent Tests / Screenings
   hasLabs: YesNo; labUploads: UploadedFile[]; lipidDate: string; ldl: string;
   lastA1c: string;
-  perfTests: { // DEXA / VO2max / ECG / Stress test
-    date: string;
-    uploads: UploadedFile[];
-  };
-  cancerScreening: string; // optional text
+  perfTests: { date: string; uploads: UploadedFile[] };
+  cancerScreening: string;
   recentImaging: YesNo; imagingType: string; imagingUploads: UploadedFile[];
 
   // M. Pain / PT
@@ -122,14 +119,12 @@ type Form = {
   timePerWeekHours: string;
   gymAccess: YesNo; gymEquipment: string;
   hiitContra: YesNo; hiitDetails: string;
-  pregnancy: YesNo | ''; // optional
+  pregnancy: YesNo | '';
 
   // O. Documents
   miscUploads: UploadedFile[];
   anythingElse: string;
 };
-
-type UploadedFile = { name: string; url: string; path: string };
 
 /** ---------- Constants ---------- */
 const DEFAULT_TZ = 'Asia/Singapore';
@@ -248,26 +243,6 @@ export default function MedicalOnboarding() {
     setForm(prev => ({ ...prev, [key]: val }));
   }
 
-  const requiredMissing = useMemo(() => {
-    const missing: string[] = [];
-    if (!form.fullName.trim()) missing.push('Full name');
-    if (!form.dob) missing.push('Date of birth');
-    if (!form.biologicalSex) missing.push('Biological sex');
-    if (!form.heightCm) missing.push('Height (cm)');
-    if (!form.weightKg) missing.push('Weight (kg)');
-    if (!form.timezone) missing.push('Primary timezone');
-    if (!form.cityCountry.trim()) missing.push('Primary city/country');
-    if (!form.consentStore) missing.push('Consent to store/process data');
-    if (!form.consentShare) missing.push('Consent to share with care team');
-    if (!form.primaryChannel) missing.push('Primary communication channel');
-    if (!form.updateStyle) missing.push('Update style');
-    if (form.hasAssistant === 'yes' && !form.assistantContact.trim()) missing.push('Assistant contact');
-    if (form.topGoals.length === 0) missing.push('Top 3 goals');
-    if (!form.travelFreq) missing.push('Travel frequency');
-    if (!form.timePerWeekHours) missing.push('Time available per week');
-    return missing;
-  }, [form]);
-
   async function uploadFiles(folder: string, files: File[]): Promise<UploadedFile[]> {
     const out: UploadedFile[] = [];
     for (const f of files) {
@@ -290,16 +265,11 @@ export default function MedicalOnboarding() {
     setErr(null); setOk(null);
     if (!uid) return;
 
-    if (requiredMissing.length) {
-      setErr(`Please complete required fields: ${requiredMissing.join(', ')}`);
-      return;
-    }
-
     setBusy(true);
     try {
       const target = doc(db, 'users', uid);
 
-      // Build payload with type coercions & minimal cleaning
+      // Coerce numeric strings on save (keep free typing as strings in UI)
       const payload = {
         medicalProfile: {
           ...form,
@@ -361,24 +331,33 @@ export default function MedicalOnboarding() {
   /** ---------- Render ---------- */
   return (
     <main style={styles.wrap}>
-      <form onSubmit={handleSubmit} style={styles.card}>
+      <form onSubmit={handleSubmit} style={styles.card} autoComplete="off">
         <h1 style={styles.h1}>Medical Onboarding</h1>
 
         {/* A. Profile & Consent */}
         <Section title="A. Profile & Consent">
           <Row>
-            <Field label="Full name *">
-              <input style={styles.input} value={form.fullName} onChange={e => set('fullName', e.target.value)} required />
+            <Field label="Full name">
+              <input
+                style={styles.input}
+                value={form.fullName ?? ''}
+                onChange={e => set('fullName', e.target.value)}
+              />
             </Field>
-            <Field label="Date of birth *">
-              <input style={styles.input} type="date" value={form.dob} onChange={e => set('dob', e.target.value)} required />
+            <Field label="Date of birth">
+              <input
+                style={styles.input}
+                type="date"
+                value={form.dob ?? ''}
+                onChange={e => set('dob', e.target.value)}
+              />
             </Field>
           </Row>
 
           <Row>
-            <Field label="Biological sex *">
+            <Field label="Biological sex">
               <RadioGroup
-                value={form.biologicalSex}
+                value={form.biologicalSex ?? ''}
                 options={['Male','Female','Intersex','Prefer not to say']}
                 onChange={v => set('biologicalSex', v as any)}
               />
@@ -386,20 +365,37 @@ export default function MedicalOnboarding() {
           </Row>
 
           <Row>
-            <Field label="Height (cm) *">
-              <input style={styles.input} type="number" min={1} placeholder="cm" value={form.heightCm} onChange={e => set('heightCm', e.target.value)} required />
+            <Field label="Height (cm)">
+              <input
+                style={styles.input}
+                type="number"
+                min={1}
+                placeholder="cm"
+                value={form.heightCm ?? ''}
+                onChange={e => set('heightCm', e.target.value)}
+              />
               <small style={styles.help}>Enter in centimeters (cm)</small>
             </Field>
-            <Field label="Weight (kg) *">
-              <input style={styles.input} type="number" min={1} placeholder="kg" value={form.weightKg} onChange={e => set('weightKg', e.target.value)} required />
+            <Field label="Weight (kg)">
+              <input
+                style={styles.input}
+                type="number"
+                min={1}
+                placeholder="kg"
+                value={form.weightKg ?? ''}
+                onChange={e => set('weightKg', e.target.value)}
+              />
               <small style={styles.help}>Enter in kilograms (kg)</small>
             </Field>
           </Row>
 
           <Row>
-            <Field label="Primary timezone *">
-              <select style={styles.input} value={form.timezone} onChange={e => set('timezone', e.target.value)}>
-                {/* Add more timezones as needed */}
+            <Field label="Primary timezone">
+              <select
+                style={styles.input}
+                value={form.timezone ?? ''}
+                onChange={e => set('timezone', e.target.value)}
+              >
                 <option value="Asia/Singapore">Asia/Singapore</option>
                 <option value="Asia/Kolkata">Asia/Kolkata</option>
                 <option value="Asia/Tokyo">Asia/Tokyo</option>
@@ -407,17 +403,31 @@ export default function MedicalOnboarding() {
                 <option value="America/New_York">America/New_York</option>
               </select>
             </Field>
-            <Field label="Primary city/country *">
-              <input style={styles.input} placeholder="e.g., Singapore, SG" value={form.cityCountry} onChange={e => set('cityCountry', e.target.value)} required />
+            <Field label="Primary city/country">
+              <input
+                style={styles.input}
+                placeholder="e.g., Singapore, SG"
+                value={form.cityCountry ?? ''}
+                onChange={e => set('cityCountry', e.target.value)}
+              />
             </Field>
           </Row>
 
           <Row>
             <Field label="Emergency contact name">
-              <input style={styles.input} value={form.emergencyContactName} onChange={e => set('emergencyContactName', e.target.value)} />
+              <input
+                style={styles.input}
+                value={form.emergencyContactName ?? ''}
+                onChange={e => set('emergencyContactName', e.target.value)}
+              />
             </Field>
             <Field label="Emergency contact phone">
-              <input style={styles.input} type="tel" value={form.emergencyContactPhone} onChange={e => set('emergencyContactPhone', e.target.value)} />
+              <input
+                style={styles.input}
+                type="tel"
+                value={form.emergencyContactPhone ?? ''}
+                onChange={e => set('emergencyContactPhone', e.target.value)}
+              />
             </Field>
           </Row>
 
@@ -436,12 +446,20 @@ export default function MedicalOnboarding() {
 
           <Row>
             <label style={styles.checkboxRow}>
-              <input type="checkbox" checked={form.consentStore} onChange={e => set('consentStore', e.target.checked)} />
-              <span>Do you consent to us storing and processing your health data for this program? *</span>
+              <input
+                type="checkbox"
+                checked={!!form.consentStore}
+                onChange={e => set('consentStore', e.target.checked)}
+              />
+              <span>Do you consent to us storing and processing your health data for this program?</span>
             </label>
             <label style={styles.checkboxRow}>
-              <input type="checkbox" checked={form.consentShare} onChange={e => set('consentShare', e.target.checked)} />
-              <span>Share data with care team via WhatsApp/email? *</span>
+              <input
+                type="checkbox"
+                checked={!!form.consentShare}
+                onChange={e => set('consentShare', e.target.checked)}
+              />
+              <span>Share data with care team via WhatsApp/email?</span>
             </label>
           </Row>
         </Section>
@@ -449,8 +467,12 @@ export default function MedicalOnboarding() {
         {/* B. Communication */}
         <Section title="B. Communication & Preferences">
           <Row>
-            <Field label="Primary communication channel *">
-              <select style={styles.input} value={form.primaryChannel} onChange={e => set('primaryChannel', e.target.value as any)}>
+            <Field label="Primary communication channel">
+              <select
+                style={styles.input}
+                value={form.primaryChannel ?? ''}
+                onChange={e => set('primaryChannel', e.target.value as any)}
+              >
                 <option value="">Select…</option>
                 <option>WhatsApp</option>
                 <option>Email</option>
@@ -462,23 +484,37 @@ export default function MedicalOnboarding() {
               <RadioYN value={form.hasAssistant} onChange={v => set('hasAssistant', v)} />
               {form.hasAssistant === 'yes' && (
                 <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
-                  <input style={styles.input} placeholder="Assistant name" value={form.assistantName} onChange={e => set('assistantName', e.target.value)} />
-                  <input style={styles.input} placeholder="Assistant phone/email" value={form.assistantContact} onChange={e => set('assistantContact', e.target.value)} />
+                  <input
+                    style={styles.input}
+                    placeholder="Assistant name"
+                    value={form.assistantName ?? ''}
+                    onChange={(e) => set('assistantName', e.target.value)}
+                  />
+                  <input
+                    style={styles.input}
+                    placeholder="Assistant phone/email"
+                    value={form.assistantContact ?? ''}
+                    onChange={(e) => set('assistantContact', e.target.value)}
+                  />
                 </div>
               )}
             </Field>
           </Row>
 
           <Row>
-            <Field label="Update style *">
+            <Field label="Update style">
               <RadioGroup
-                value={form.updateStyle}
+                value={form.updateStyle ?? ''}
                 options={['Executive summary first','Detailed first']}
                 onChange={v => set('updateStyle', v as any)}
               />
             </Field>
             <Field label="Language preference">
-              <select style={styles.input} value={form.language} onChange={e => set('language', e.target.value)}>
+              <select
+                style={styles.input}
+                value={form.language ?? ''}
+                onChange={e => set('language', e.target.value)}
+              >
                 {LANGS.map(l => <option key={l}>{l}</option>)}
               </select>
             </Field>
@@ -495,7 +531,7 @@ export default function MedicalOnboarding() {
 
         {/* C. Goals */}
         <Section title="C. Goals">
-          <Field label="Top 3 goals *">
+          <Field label="Top 3 goals">
             <ChipBox
               options={GOALS}
               values={form.topGoals}
@@ -509,10 +545,20 @@ export default function MedicalOnboarding() {
           </Field>
           <Row>
             <Field label="Target timeline(s)">
-              <input style={styles.input} placeholder='e.g., "by Dec 2026"' value={form.timelines} onChange={e => set('timelines', e.target.value)} />
+              <input
+                style={styles.input}
+                placeholder='e.g., "by Dec 2026"'
+                value={form.timelines ?? ''}
+                onChange={e => set('timelines', e.target.value)}
+              />
             </Field>
             <Field label='What does “success” look like for you?'>
-              <input style={styles.input} placeholder="Short text" value={form.successDefinition} onChange={e => set('successDefinition', e.target.value)} />
+              <input
+                style={styles.input}
+                placeholder="Short text"
+                value={form.successDefinition ?? ''}
+                onChange={e => set('successDefinition', e.target.value)}
+              />
             </Field>
           </Row>
         </Section>
@@ -521,10 +567,21 @@ export default function MedicalOnboarding() {
         <Section title="D. Lifestyle">
           <Row>
             <Field label="Occupation & typical work hours">
-              <input style={styles.input} value={form.occupation} onChange={e => set('occupation', e.target.value)} />
+              <input
+                style={styles.input}
+                value={form.occupation ?? ''}
+                onChange={e => set('occupation', e.target.value)}
+              />
             </Field>
             <Field label="Average sleep duration (hours/night)">
-              <input style={styles.input} type="number" min={0} step="0.5" value={form.sleepHours} onChange={e => set('sleepHours', e.target.value)} />
+              <input
+                style={styles.input}
+                type="number"
+                min={0}
+                step="0.5"
+                value={form.sleepHours ?? ''}
+                onChange={e => set('sleepHours', e.target.value)}
+              />
               <small style={styles.help}>hours/night</small>
             </Field>
           </Row>
@@ -539,16 +596,31 @@ export default function MedicalOnboarding() {
 
           <Row>
             <Field label="Physical activity baseline">
-              <RadioGroup value={form.activity} options={['Sedentary','Light','Moderate','High']} onChange={(v) => set('activity', v as any)} />
+              <RadioGroup
+                value={form.activity ?? ''}
+                options={['Sedentary','Light','Moderate','High']}
+                onChange={(v) => set('activity', v as any)}
+              />
             </Field>
             <Field label="Weekly exercise days you can commit (0–7)">
-              <input style={styles.input} type="number" min={0} max={7} value={form.exerciseDays} onChange={e => set('exerciseDays', e.target.value)} />
+              <input
+                style={styles.input}
+                type="number"
+                min={0}
+                max={7}
+                value={form.exerciseDays ?? ''}
+                onChange={e => set('exerciseDays', e.target.value)}
+              />
             </Field>
           </Row>
 
           <Row>
             <Field label="Diet pattern">
-              <select style={styles.input} value={form.diet} onChange={e => set('diet', e.target.value as any)}>
+              <select
+                style={styles.input}
+                value={form.diet ?? ''}
+                onChange={e => set('diet', e.target.value as any)}
+              >
                 <option value="">Select…</option>
                 <option>Mixed</option><option>Vegetarian</option><option>Vegan</option>
                 <option>Mediterranean</option><option>Low-carb</option><option>Other</option>
@@ -565,22 +637,28 @@ export default function MedicalOnboarding() {
 
           <Row>
             <Field label="Alcohol use">
-              <RadioGroup value={form.alcohol} options={['None','Occasional','Weekly','Daily']} onChange={(v) => set('alcohol', v as any)} />
+              <RadioGroup value={form.alcohol ?? ''} options={['None','Occasional','Weekly','Daily']} onChange={(v) => set('alcohol', v as any)} />
             </Field>
             <Field label="Tobacco use">
-              <RadioGroup value={form.tobacco} options={['Never','Former','Current']} onChange={(v) => set('tobacco', v as any)} />
+              <RadioGroup value={form.tobacco ?? ''} options={['Never','Former','Current']} onChange={(v) => set('tobacco', v as any)} />
             </Field>
             <Field label="Caffeine cups/day">
-              <input style={styles.input} type="number" min={0} value={form.caffeineCups} onChange={e => set('caffeineCups', e.target.value)} />
+              <input
+                style={styles.input}
+                type="number"
+                min={0}
+                value={form.caffeineCups ?? ''}
+                onChange={e => set('caffeineCups', e.target.value)}
+              />
             </Field>
           </Row>
         </Section>
 
         {/* E. Travel */}
         <Section title="E. Travel Pattern">
-          <Field label="How often do you travel for work? *">
+          <Field label="How often do you travel for work?">
             <RadioGroup
-              value={form.travelFreq}
+              value={form.travelFreq ?? ''}
               options={['~1 week per month','2–3 days monthly','Rare']}
               onChange={(v) => set('travelFreq', v as any)}
             />
@@ -596,10 +674,20 @@ export default function MedicalOnboarding() {
 
           <Row>
             <Field label="Next planned trip start">
-              <input style={styles.input} type="date" value={form.nextTripStart} onChange={e => set('nextTripStart', e.target.value)} />
+              <input
+                style={styles.input}
+                type="date"
+                value={form.nextTripStart ?? ''}
+                onChange={e => set('nextTripStart', e.target.value)}
+              />
             </Field>
             <Field label="Next planned trip end">
-              <input style={styles.input} type="date" value={form.nextTripEnd} onChange={e => set('nextTripEnd', e.target.value)} />
+              <input
+                style={styles.input}
+                type="date"
+                value={form.nextTripEnd ?? ''}
+                onChange={e => set('nextTripEnd', e.target.value)}
+              />
             </Field>
             <Field label="Jet lag hits you hard?">
               <RadioYN value={form.jetLagHard} onChange={(v) => set('jetLagHard', v)} />
@@ -615,7 +703,7 @@ export default function MedicalOnboarding() {
                 <label style={{ display:'flex', gap:8, alignItems:'center' }}>
                   <input
                     type="checkbox"
-                    checked={c.selected}
+                    checked={!!c.selected}
                     onChange={e => {
                       const copy = [...form.conditions]; copy[idx] = { ...c, selected: e.target.checked };
                       set('conditions', copy);
@@ -641,7 +729,12 @@ export default function MedicalOnboarding() {
             <Field label="Currently under any specialist care?">
               <RadioYN value={form.specialistCare} onChange={(v) => set('specialistCare', v)} />
               {form.specialistCare === 'yes' && (
-                <input style={{ ...styles.input, marginTop:8 }} placeholder="Which specialist(s)?" value={form.specialistWhich} onChange={e => set('specialistWhich', e.target.value)} />
+                <input
+                  style={{ ...styles.input, marginTop:8 }}
+                  placeholder="Which specialist(s)?"
+                  value={form.specialistWhich ?? ''}
+                  onChange={e => set('specialistWhich', e.target.value)}
+                />
               )}
             </Field>
           </Row>
@@ -652,10 +745,10 @@ export default function MedicalOnboarding() {
           <h3 style={styles.h3}>Current prescription medications</h3>
           {form.rx.map((r, i) => (
             <Row key={`rx-${i}`}>
-              <input style={styles.input} placeholder="Name" value={r.name} onChange={e => updateRow('rx', i, { name: e.target.value })} />
-              <input style={styles.input} placeholder="Dose" value={r.dose} onChange={e => updateRow('rx', i, { dose: e.target.value })} />
-              <input style={styles.input} placeholder="Frequency" value={r.frequency} onChange={e => updateRow('rx', i, { frequency: e.target.value })} />
-              <input style={styles.input} type="date" placeholder="Start date" value={r.startDate} onChange={e => updateRow('rx', i, { startDate: e.target.value })} />
+              <input style={styles.input} placeholder="Name" value={r.name ?? ''} onChange={e => updateRow('rx', i, { name: e.target.value })} />
+              <input style={styles.input} placeholder="Dose" value={r.dose ?? ''} onChange={e => updateRow('rx', i, { dose: e.target.value })} />
+              <input style={styles.input} placeholder="Frequency" value={r.frequency ?? ''} onChange={e => updateRow('rx', i, { frequency: e.target.value })} />
+              <input style={styles.input} type="date" placeholder="Start date" value={r.startDate ?? ''} onChange={e => updateRow('rx', i, { startDate: e.target.value })} />
               <button type="button" onClick={() => removeRow('rx', i)} style={styles.smallBtn}>Remove</button>
             </Row>
           ))}
@@ -664,10 +757,10 @@ export default function MedicalOnboarding() {
           <h3 style={styles.h3}>OTC meds / Supplements</h3>
           {form.otc.map((r, i) => (
             <Row key={`otc-${i}`}>
-              <input style={styles.input} placeholder="Name" value={r.name} onChange={e => updateRow('otc', i, { name: e.target.value })} />
-              <input style={styles.input} placeholder="Dose" value={r.dose} onChange={e => updateRow('otc', i, { dose: e.target.value })} />
-              <input style={styles.input} placeholder="Frequency" value={r.frequency} onChange={e => updateRow('otc', i, { frequency: e.target.value })} />
-              <input style={styles.input} type="date" placeholder="Start date" value={r.startDate} onChange={e => updateRow('otc', i, { startDate: e.target.value })} />
+              <input style={styles.input} placeholder="Name" value={r.name ?? ''} onChange={e => updateRow('otc', i, { name: e.target.value })} />
+              <input style={styles.input} placeholder="Dose" value={r.dose ?? ''} onChange={e => updateRow('otc', i, { dose: e.target.value })} />
+              <input style={styles.input} placeholder="Frequency" value={r.frequency ?? ''} onChange={e => updateRow('otc', i, { frequency: e.target.value })} />
+              <input style={styles.input} type="date" placeholder="Start date" value={r.startDate ?? ''} onChange={e => updateRow('otc', i, { startDate: e.target.value })} />
               <button type="button" onClick={() => removeRow('otc', i)} style={styles.smallBtn}>Remove</button>
             </Row>
           ))}
@@ -675,11 +768,11 @@ export default function MedicalOnboarding() {
 
           <Row>
             <Field label="Medication adherence">
-              <RadioGroup value={form.adherence} options={['Always','Often','Sometimes','Rarely']} onChange={(v) => set('adherence', v as any)} />
+              <RadioGroup value={form.adherence ?? ''} options={['Always','Often','Sometimes','Rarely']} onChange={(v) => set('adherence', v as any)} />
             </Field>
           </Row>
           <Field label="Any side effects you’re experiencing?">
-            <textarea style={styles.textarea} value={form.sideEffects} onChange={e => set('sideEffects', e.target.value)} />
+            <textarea style={styles.textarea} value={form.sideEffects ?? ''} onChange={e => set('sideEffects', e.target.value)} />
           </Field>
         </Section>
 
@@ -687,14 +780,14 @@ export default function MedicalOnboarding() {
         <Section title="H. Allergies & Intolerances">
           <Field label="Drug allergies (pick & add details)">
             <CheckboxGroup options={DRUG_ALLERGY_LIST} values={form.drugAllergies} onToggle={(v) => toggleInArray('drugAllergies', v)} />
-            <input style={{ ...styles.input, marginTop:8 }} placeholder="Free text details" value={form.drugAllergiesFree} onChange={e => set('drugAllergiesFree', e.target.value)} />
+            <input style={{ ...styles.input, marginTop:8 }} placeholder="Free text details" value={form.drugAllergiesFree ?? ''} onChange={e => set('drugAllergiesFree', e.target.value)} />
           </Field>
           <Field label="Food allergies / intolerances">
             <CheckboxGroup options={FOOD_ALLERGY_LIST} values={form.foodAllergies} onToggle={(v) => toggleInArray('foodAllergies', v)} />
-            <input style={{ ...styles.input, marginTop:8 }} placeholder="Free text details" value={form.foodAllergiesFree} onChange={e => set('foodAllergiesFree', e.target.value)} />
+            <input style={{ ...styles.input, marginTop:8 }} placeholder="Free text details" value={form.foodAllergiesFree ?? ''} onChange={e => set('foodAllergiesFree', e.target.value)} />
           </Field>
           <Field label="Other allergies">
-            <textarea style={styles.textarea} value={form.otherAllergies} onChange={e => set('otherAllergies', e.target.value)} />
+            <textarea style={styles.textarea} value={form.otherAllergies ?? ''} onChange={e => set('otherAllergies', e.target.value)} />
           </Field>
         </Section>
 
@@ -709,10 +802,10 @@ export default function MedicalOnboarding() {
             <>
               {form.surgeries.map((s, i) => (
                 <Row key={`sx-${i}`}>
-                  <input style={styles.input} placeholder="Procedure/diagnosis" value={s.title} onChange={e => updateSx(i, { title: e.target.value })} />
-                  <input style={styles.input} placeholder="Month/Year" value={s.monthYear} onChange={e => updateSx(i, { monthYear: e.target.value })} />
-                  <input style={styles.input} placeholder="Hospital" value={s.hospital} onChange={e => updateSx(i, { hospital: e.target.value })} />
-                  <input style={styles.input} placeholder="Notes" value={s.notes} onChange={e => updateSx(i, { notes: e.target.value })} />
+                  <input style={styles.input} placeholder="Procedure/diagnosis" value={s.title ?? ''} onChange={e => updateSx(i, { title: e.target.value })} />
+                  <input style={styles.input} placeholder="Month/Year" value={s.monthYear ?? ''} onChange={e => updateSx(i, { monthYear: e.target.value })} />
+                  <input style={styles.input} placeholder="Hospital" value={s.hospital ?? ''} onChange={e => updateSx(i, { hospital: e.target.value })} />
+                  <input style={styles.input} placeholder="Notes" value={s.notes ?? ''} onChange={e => updateSx(i, { notes: e.target.value })} />
                   <button type="button" onClick={() => removeSx(i)} style={styles.smallBtn}>Remove</button>
                 </Row>
               ))}
@@ -724,7 +817,7 @@ export default function MedicalOnboarding() {
         {/* J. Family History */}
         <Section title="J. Family History (first-degree)">
           <Row>
-            <Field label="Heart disease &lt;55 (men) / &lt;65 (women)">
+            <Field label="Heart disease <55 (men) / <65 (women)">
               <Radio3 value={form.famHeartEarly} onChange={v => set('famHeartEarly', v)} />
             </Field>
             <Field label="Stroke">
@@ -738,7 +831,7 @@ export default function MedicalOnboarding() {
             <TagInput values={form.famCancerTypes} setValues={(vals) => set('famCancerTypes', vals)} placeholder="e.g., Breast, Colon" />
           </Field>
           <Field label="Other hereditary conditions">
-            <textarea style={styles.textarea} value={form.famOther} onChange={e => set('famOther', e.target.value)} />
+            <textarea style={styles.textarea} value={form.famOther ?? ''} onChange={e => set('famOther', e.target.value)} />
           </Field>
         </Section>
 
@@ -746,32 +839,32 @@ export default function MedicalOnboarding() {
         <Section title="K. Measurements & Devices">
           <Row>
             <Field label="Blood pressure — systolic">
-              <input style={styles.input} type="number" placeholder="systolic" value={form.bpSys} onChange={e => set('bpSys', e.target.value)} />
+              <input style={styles.input} type="number" placeholder="systolic" value={form.bpSys ?? ''} onChange={e => set('bpSys', e.target.value)} />
               <small style={styles.help}>mmHg</small>
             </Field>
             <Field label="Blood pressure — diastolic">
-              <input style={styles.input} type="number" placeholder="diastolic" value={form.bpDia} onChange={e => set('bpDia', e.target.value)} />
+              <input style={styles.input} type="number" placeholder="diastolic" value={form.bpDia ?? ''} onChange={e => set('bpDia', e.target.value)} />
               <small style={styles.help}>mmHg</small>
             </Field>
             <Field label="BP date">
-              <input style={styles.input} type="date" value={form.bpDate} onChange={e => set('bpDate', e.target.value)} />
+              <input style={styles.input} type="date" value={form.bpDate ?? ''} onChange={e => set('bpDate', e.target.value)} />
             </Field>
           </Row>
 
           <Row>
             <Field label="Resting heart rate">
-              <input style={styles.input} type="number" value={form.rhr} onChange={e => set('rhr', e.target.value)} />
+              <input style={styles.input} type="number" value={form.rhr ?? ''} onChange={e => set('rhr', e.target.value)} />
               <small style={styles.help}>bpm</small>
             </Field>
             <Field label="Waist circumference">
-              <input style={styles.input} type="number" value={form.waistCm} onChange={e => set('waistCm', e.target.value)} />
+              <input style={styles.input} type="number" value={form.waistCm ?? ''} onChange={e => set('waistCm', e.target.value)} />
               <small style={styles.help}>cm</small>
             </Field>
           </Row>
 
           <Row>
             <Field label="Wearables connected?">
-              <select style={styles.input} value={form.wearable} onChange={e => set('wearable', e.target.value as any)}>
+              <select style={styles.input} value={form.wearable ?? ''} onChange={e => set('wearable', e.target.value as any)}>
                 <option value="">Select…</option>
                 <option>Garmin</option><option>Apple Watch</option><option>Fitbit</option><option>Oura</option><option>None</option>
               </select>
@@ -804,21 +897,21 @@ export default function MedicalOnboarding() {
 
           <Row>
             <Field label="Last lipid panel date">
-              <input style={styles.input} type="date" value={form.lipidDate} onChange={e => set('lipidDate', e.target.value)} />
+              <input style={styles.input} type="date" value={form.lipidDate ?? ''} onChange={e => set('lipidDate', e.target.value)} />
             </Field>
             <Field label="LDL (if known)">
-              <input style={styles.input} type="number" value={form.ldl} onChange={e => set('ldl', e.target.value)} />
+              <input style={styles.input} type="number" value={form.ldl ?? ''} onChange={e => set('ldl', e.target.value)} />
               <small style={styles.help}>mg/dL</small>
             </Field>
             <Field label="Last A1c (if known)">
-              <input style={styles.input} type="number" step="0.1" value={form.lastA1c} onChange={e => set('lastA1c', e.target.value)} />
+              <input style={styles.input} type="number" step="0.1" value={form.lastA1c ?? ''} onChange={e => set('lastA1c', e.target.value)} />
               <small style={styles.help}>%</small>
             </Field>
           </Row>
 
           <Field label="DEXA / VO₂max / ECG / Stress test (date + upload)">
             <div style={{ display:'grid', gap:8 }}>
-              <input style={styles.input} type="date" value={form.perfTests.date} onChange={e => set('perfTests', { ...form.perfTests, date: e.target.value })} />
+              <input style={styles.input} type="date" value={form.perfTests.date ?? ''} onChange={e => set('perfTests', { ...form.perfTests, date: e.target.value })} />
               <FileUploader
                 multiple
                 onUpload={async (files) => {
@@ -831,7 +924,7 @@ export default function MedicalOnboarding() {
           </Field>
 
           <Field label="Cancer screening done? (optional)">
-            <input style={styles.input} placeholder="colonoscopy/mammogram/PSA…" value={form.cancerScreening} onChange={e => set('cancerScreening', e.target.value)} />
+            <input style={styles.input} placeholder="colonoscopy/mammogram/PSA…" value={form.cancerScreening ?? ''} onChange={e => set('cancerScreening', e.target.value)} />
           </Field>
 
           <Row>
@@ -841,7 +934,7 @@ export default function MedicalOnboarding() {
             {form.recentImaging === 'yes' && (
               <>
                 <Field label="Type">
-                  <input style={styles.input} placeholder="e.g., MRI brain" value={form.imagingType} onChange={e => set('imagingType', e.target.value)} />
+                  <input style={styles.input} placeholder="e.g., MRI brain" value={form.imagingType ?? ''} onChange={e => set('imagingType', e.target.value)} />
                 </Field>
                 <Field label="Upload imaging reports">
                   <FileUploader
@@ -862,7 +955,7 @@ export default function MedicalOnboarding() {
         <Section title="M. Pain / Injuries / PT">
           <Field label="Current pain or limitations">
             <CheckboxGroup options={PAIN_LIST} values={form.painIssues} onToggle={(v) => toggleInArray('painIssues', v)} />
-            <textarea style={{ ...styles.textarea, marginTop:8 }} placeholder="Free text" value={form.painFreeText} onChange={e => set('painFreeText', e.target.value)} />
+            <textarea style={{ ...styles.textarea, marginTop:8 }} placeholder="Free text" value={form.painFreeText ?? ''} onChange={e => set('painFreeText', e.target.value)} />
           </Field>
           <Row>
             <Field label="PT history">
@@ -870,7 +963,7 @@ export default function MedicalOnboarding() {
             </Field>
             {form.ptHistory === 'yes' && (
               <Field label="Details">
-                <input style={styles.input} value={form.ptDetails} onChange={e => set('ptDetails', e.target.value)} />
+                <input style={styles.input} value={form.ptDetails ?? ''} onChange={e => set('ptDetails', e.target.value)} />
               </Field>
             )}
           </Row>
@@ -879,8 +972,8 @@ export default function MedicalOnboarding() {
         {/* N. Constraints & Risks */}
         <Section title="N. Constraints & Risks">
           <Row>
-            <Field label="Time available per week for the plan *">
-              <input style={styles.input} type="number" min={1} value={form.timePerWeekHours} onChange={e => set('timePerWeekHours', e.target.value)} />
+            <Field label="Time available per week for the plan">
+              <input style={styles.input} type="number" min={1} value={form.timePerWeekHours ?? ''} onChange={e => set('timePerWeekHours', e.target.value)} />
               <small style={styles.help}>hours (default 5)</small>
             </Field>
             <Field label="Gym access">
@@ -888,7 +981,7 @@ export default function MedicalOnboarding() {
             </Field>
             {form.gymAccess === 'yes' && (
               <Field label="Equipment">
-                <input style={styles.input} placeholder="e.g., squat rack, treadmill" value={form.gymEquipment} onChange={e => set('gymEquipment', e.target.value)} />
+                <input style={styles.input} placeholder="e.g., squat rack, treadmill" value={form.gymEquipment ?? ''} onChange={e => set('gymEquipment', e.target.value)} />
               </Field>
             )}
           </Row>
@@ -899,11 +992,11 @@ export default function MedicalOnboarding() {
             </Field>
             {form.hiitContra === 'yes' && (
               <Field label="Details">
-                <input style={styles.input} value={form.hiitDetails} onChange={e => set('hiitDetails', e.target.value)} />
+                <input style={styles.input} value={form.hiitDetails ?? ''} onChange={e => set('hiitDetails', e.target.value)} />
               </Field>
             )}
             <Field label="Pregnancy / planning pregnancy in next 12 months (optional)">
-              <select style={styles.input} value={form.pregnancy} onChange={e => set('pregnancy', e.target.value as any)}>
+              <select style={styles.input} value={form.pregnancy ?? ''} onChange={e => set('pregnancy', e.target.value as any)}>
                 <option value="">Prefer not to say</option>
                 <option value="yes">Yes</option><option value="no">No</option>
               </select>
@@ -925,7 +1018,7 @@ export default function MedicalOnboarding() {
           </Field>
 
           <Field label="Anything else we should know?">
-            <textarea style={styles.textarea} value={form.anythingElse} onChange={e => set('anythingElse', e.target.value)} />
+            <textarea style={styles.textarea} value={form.anythingElse ?? ''} onChange={e => set('anythingElse', e.target.value)} />
           </Field>
         </Section>
 
@@ -983,12 +1076,22 @@ export default function MedicalOnboarding() {
       </div>
     );
   }
-  function RadioGroup({ value, options, onChange }: { value: string; options: string[]; onChange:(v:string)=>void }) {
+
+  // Stable-name radio group (prevents remounting & input glitches)
+  function RadioGroup({
+    value, options, onChange
+  }: { value: string; options: string[]; onChange:(v:string)=>void }) {
+    const name = useId();
     return (
       <div style={styles.radioRow}>
         {options.map(opt => (
           <label key={opt} style={styles.radioLabel}>
-            <input type="radio" name={`rg-${labelId(options)}`} checked={value === opt} onChange={() => onChange(opt)} />
+            <input
+              type="radio"
+              name={name}
+              checked={value === opt}
+              onChange={() => onChange(opt)}
+            />
             <span>{opt}</span>
           </label>
         ))}
@@ -1063,7 +1166,6 @@ export default function MedicalOnboarding() {
       </ul>
     );
   }
-  function labelId(arr:string[]) { return arr.join('-').toLowerCase().replace(/\s+/g,'-'); }
 }
 
 /** ---------- Styles ---------- */

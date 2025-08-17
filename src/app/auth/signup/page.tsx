@@ -27,6 +27,7 @@ export default function SignUpPage() {
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
       if (name.trim()) await updateProfile(cred.user, { displayName: name.trim() });
       try { await sendEmailVerification(cred.user); } catch {}
+      
       router.replace('/onboarding/medical');
     } catch (e: any) {
       setErr(e?.message ?? 'Sign-up failed');

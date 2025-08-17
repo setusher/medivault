@@ -9,6 +9,8 @@ import {
 } from 'firebase/auth';
 import { getFirebaseAuth, googleProvider } from '@/lib/firebase';
 
+
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
