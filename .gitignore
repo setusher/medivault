@@ -1,0 +1,37 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Python/venv
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.cache/
+.ipynb_checkpoints/
+
+# Editors
+.vscode/
+.idea/
+
+# Secrets & local config
+.env
+secrets/
+*.pem
+*.p12
+*.key
+
+# Data caches / debug (keep minimal artifacts only)
+data/.cache/
+data/debug_*.txt
+
+# Firebase emulator (if any)
+firebase-debug.log
