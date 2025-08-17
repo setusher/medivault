@@ -284,7 +284,7 @@ export default function Home() {
         {/* SPECIAL CARD: Health Progress with live snapshot */}
         <HealthProgressCard
           title="Health Progress"
-          subtitle={mLoading ? 'Loading journey…' : (mRows.length ? `Journey snapshot • ${dateRange}` : 'No readings yet')}
+          subtitle={"Your health over time"}
           href="/progress"
           colorA={P.p2}
           colorB={P.p4}
@@ -317,9 +317,9 @@ export default function Home() {
           iconSrc={ICONS.history}
         />
         <FeatureCard
-          title="Tracker"
-          subtitle="Monitor inventory"
-          href="/medicine"
+          title="Your Persona"
+          subtitle="Monitor yourself"
+          href="/persona"
           colorA={P.p8}
           colorB={P.p6}
           iconSrc={ICONS.medicine}
@@ -371,18 +371,18 @@ function HealthProgressCard({
   iconSrc: any;
   rows: MetricRow[];
 }) {
-  const sHRV = makeSeries(rows, 'HRV');
-  const sRHR = makeSeries(rows, 'RHR');
-  const sSLP = makeSeries(rows, 'Sleep');
+  // const sHRV = makeSeries(rows, 'HRV');
+  // const sRHR = makeSeries(rows, 'RHR');
+  // const sSLP = makeSeries(rows, 'Sleep');
 
   // week timeline chips (last 6 weeks from BASE)
   const byWeek = new Map<number, MetricRow>();
-  rows.forEach((r) => {
-    const d = toDate(r.date || '');
-    if (!d) return;
-    const wk = weekFromBase(d);
-    byWeek.set(wk, r); // keep last for the week
-  });
+  // rows.forEach((r) => {
+  //   const d = toDate(r.date || '');
+  //   if (!d) return;
+  //   const wk = weekFromBase(d);
+  //   byWeek.set(wk, r); // keep last for the week
+  // });
   const weekEntries = Array.from(byWeek.entries()).sort((a,b)=>a[0]-b[0]).slice(-6);
 
   return (
@@ -404,17 +404,17 @@ function HealthProgressCard({
           <p style={styles.cardSubtitle}>{subtitle}</p>
 
           {/* tiny charts row */}
-          <div style={mini.metricsRow}>
+          {/* <div style={mini.metricsRow}>
             <Spark title={`HRV (${sHRV.min}–${sHRV.max})`} color="#00A884" points={polylinePoints(sHRV)} />
             <Spark title={`RHR (${sRHR.min}–${sRHR.max})`} color="#D86F52" points={polylinePoints(sRHR)} />
             <Spark title={`Sleep (${sSLP.min}–${sSLP.max})`} color="#6B5BD6" points={polylinePoints(sSLP)} />
-          </div>
+          </div> */}
 
           {/* week timeline */}
           <div style={mini.timelineWrap}>
-            {weekEntries.length === 0 && (
+            {/* {weekEntries.length === 0 && (
               <div style={{ fontSize: 12, opacity: 0.75 }}>No weekly data yet</div>
-            )}
+            )} */}
             {weekEntries.map(([wk, r]) => {
               const d = toDate(r.date || '');
               const label = d ? d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : `W${wk}`;
